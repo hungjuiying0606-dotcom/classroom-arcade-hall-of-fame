@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Arcade - 教室遊樂園</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="互動式課堂複習遊戲平台。透過大富翁、連連看、打地鼠與尋寶遊戲，讓學生在遊玩中複習題目，並自動將分數記錄於 Google 試算表。">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Press+Start+2P&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <!-- Canvas background for particle effects -->
+  <canvas id="bg-particles"></canvas>
+
+  <!-- Main Arcade Portal -->
+  <div id="arcade-lobby" class="container">
+    
+    <!-- Top Header -->
+    <header class="header">
+      <div class="logo-area">
+        <div class="pixel-cube animate-glow"></div>
+        <h1 class="logo-text">CLASSROOM <span class="accent-text">ARCADE</span></h1>
+      </div>
+      <p class="subtitle">🎮 點燃學習熱情！在遊戲中複習與挑戰自我 ⚡</p>
+      
+      <div class="header-controls">
+        <button id="theme-toggle" class="btn btn-icon" title="切換主題">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button id="open-settings" class="btn btn-icon btn-neon-blue" title="設定資料庫連線">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Connection Banner (Appears if no API is configured) -->
+    <div id="connection-banner" class="connection-banner">
+      <div class="banner-content">
+        <i data-lucide="alert-circle" class="banner-icon"></i>
+        <span>目前處於<strong>「單機測試模式」</strong>。成績將不會寫入試算表。若要記錄分數，請點擊右上角設定設定 API 串接。</span>
+      </div>
+    </div>
+
+    <!-- Lobby Content Grid -->
+    <main class="grid-layout">
+      
+      <!-- Student Info Panel (Left Sidebar) -->
+      <section class="panel glass-panel student-panel">
+        <h2 class="panel-title"><i data-lucide="user"></i> 玩家登錄</h2>
+        
+        <form id="student-form" class="student-form">
+          <div class="form-group">
+            <label for="student-class">班級</label>
+            <input type="text" id="student-class" placeholder="例如：701" required autocomplete="off">
+          </div>
+          
+          <div class="form-group">
+            <label for="student-seat">座號</label>
+            <input type="number" id="student-seat" min="1" max="100" placeholder="例如：5" required autocomplete="off">
+          </div>
+          
+          <div class="form-group">
+            <label for="student-name">姓名</label>
+            <input type="text" id="student-name" placeholder="例如：王小明" required autocomplete="off">
+          </div>
+          
+          <button type="submit" id="btn-login" class="btn btn-neon-green btn-full">
+            <i data-lucide="play-circle"></i> 確認玩家身份
+          </button>
+        </form>
+        
+        <div id="student-badge" class="student-badge hidden">
+          <div class="badge-avatar">🕹️</div>
+          <div class="badge-info">
+            <p class="badge-title">當前玩家</p>
+            <p id="badge-display-name" class="badge-name">王小明 (701班 5號)</p>
+          </div>
+          <button id="btn-logout" class="btn btn-sm btn-outline-danger" title="更換玩家">
+            <i data-lucide="log-out"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Game Selection Grid (Right Main Content) -->
+      <section class="games-section">
+        <h2 class="section-title"><i data-lucide="gamepad-2"></i> 選擇複習遊戲</h2>
+        
+        <div class="game-cards-grid">
+          
+          <!-- Card 1: Monopoly -->
+          <div class="game-card card-monopoly locked" data-game="monopoly">
+            <div class="card-glow"></div>
+            <div class="game-badge">經典 board</div>
+            <div class="card-icon">🎲</div>
+            <h3 class="game-title">知識大富翁</h3>
+            <p class="game-desc">擲骰子在環形地圖上前進！回答問題賺取金幣，避開監獄，看誰能順利繞行完成挑戰！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="award"></i> 獎金賽制</span>
+              <button class="btn btn-neon-pink start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 2: Match-up -->
+          <div class="game-card card-match locked" data-game="match">
+            <div class="card-glow"></div>
+            <div class="game-badge">記憶配對</div>
+            <div class="card-icon">🧩</div>
+            <h3 class="game-title">知識連連看</h3>
+            <p class="game-desc">翻開卡牌配對題目與正確答案！考驗你的記憶力與知識熟練度，用最快速度消滅所有卡牌！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="clock"></i> 計時挑戰</span>
+              <button class="btn btn-neon-blue start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 3: Whack-a-Mole -->
+          <div class="game-card card-mole locked" data-game="mole">
+            <div class="card-glow"></div>
+            <div class="game-badge">手眼協調</div>
+            <div class="card-icon">🔨</div>
+            <h3 class="game-title">拼速打地鼠</h3>
+            <p class="game-desc">地鼠抱著選項探出頭！看清上方的題目，在時限內打中代表正確答案的地鼠，挑戰連擊加分！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="zap"></i> 反應力考驗</span>
+              <button class="btn btn-neon-green start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 4: Treasure Hunt -->
+          <div class="game-card card-treasure locked" data-game="treasure">
+            <div class="card-glow"></div>
+            <div class="game-badge">策略冒險</div>
+            <div class="card-icon">🏴‍☠️</div>
+            <h3 class="game-title">秘境尋寶記</h3>
+            <p class="game-desc">在未知的網格地圖上探險！答對題目以開闢道路，避開陷阱，奪得終點處的神祕大寶箱！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="shield"></i> 冒險探索</span>
+              <button class="btn btn-neon-gold start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+
+          <!-- Card 5: Space Shooter -->
+          <div class="game-card card-shooter locked" data-game="shooter">
+            <div class="card-glow"></div>
+            <div class="game-badge">街機射擊</div>
+            <div class="card-icon">🚀</div>
+            <h3 class="game-title">太空開拓者</h3>
+            <p class="game-desc">駕駛太空戰機翱翔於星海！射擊標示正確答案的敵機，防禦護盾並躲避隕石！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="zap"></i> 射擊挑戰</span>
+              <button class="btn btn-neon-pink start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 6: Speed Racer -->
+          <div class="game-card card-racer locked" data-game="racer">
+            <div class="card-glow"></div>
+            <div class="game-badge">賽車競速</div>
+            <div class="card-icon">🏎️</div>
+            <h3 class="game-title">極速賽車手</h3>
+            <p class="game-desc">將賽車開進標示正確答案的車道！避開錯誤答案帶來的撞車減速，衝刺更高得分！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="award"></i> 極速疾馳</span>
+              <button class="btn btn-neon-blue start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 7: Target Archery -->
+          <div class="game-card card-archery locked" data-game="archery">
+            <div class="card-glow"></div>
+            <div class="game-badge">神射打靶</div>
+            <div class="card-icon">🏹</div>
+            <h3 class="game-title">神射手打靶</h3>
+            <p class="game-desc">瞄準並射擊帶有正確答案的移動標靶！命中紅心即可獲得高分加成！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="shield"></i> 瞄準挑戰</span>
+              <button class="btn btn-neon-green start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 8: Platform Jumper -->
+          <div class="game-card card-jumper locked" data-game="jumper">
+            <div class="card-glow"></div>
+            <div class="game-badge">垂直彈跳</div>
+            <div class="card-icon">🌀</div>
+            <h3 class="game-title">彈跳小英雄</h3>
+            <p class="game-desc">踩上正確答案的懸空平台以反彈跳躍至更高處！避開會崩塌的錯誤平台！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="clock"></i> 重力大冒險</span>
+              <button class="btn btn-neon-gold start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+
+          <!-- Card 9: Memory Flip -->
+          <div class="game-card card-flip locked" data-game="flip">
+            <div class="card-glow"></div>
+            <div class="game-badge">經典翻牌</div>
+            <div class="card-icon">🎴</div>
+            <h3 class="game-title">經典翻牌記</h3>
+            <p class="game-desc">翻開卡牌配對題目與正確答案！考驗你的記憶熟練度，以最少嘗試次數完成配對！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="brain"></i> 記憶考驗</span>
+              <button class="btn btn-neon-blue start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 10: Puzzle Builder -->
+          <div class="game-card card-puzzle locked" data-game="puzzle">
+            <div class="card-glow"></div>
+            <div class="game-badge">拼圖還原</div>
+            <div class="card-icon">🧩</div>
+            <h3 class="game-title">拼圖大師</h3>
+            <p class="game-desc">答對題目來逐步解鎖並還原神秘的拼圖插畫！在限時內拼出完整圖案過關！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="image"></i> 視覺拼圖</span>
+              <button class="btn btn-neon-gold start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 11: Balloon Popper -->
+          <div class="game-card card-balloon locked" data-game="balloon">
+            <div class="card-glow"></div>
+            <div class="game-badge">戳戳氣球</div>
+            <div class="card-icon">🎈</div>
+            <h3 class="game-title">歡樂氣球派對</h3>
+            <p class="game-desc">戳破印有正確答案的上升氣球！別漏掉正確的氣球，否則會扣除生命值哦！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="party-popper"></i> 點擊挑戰</span>
+              <button class="btn btn-neon-pink start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+          
+          <!-- Card 12: Gold Miner -->
+          <div class="game-card card-miner locked" data-game="miner">
+            <div class="card-glow"></div>
+            <div class="game-badge">黃金礦工</div>
+            <div class="card-icon">⛏️</div>
+            <h3 class="game-title">歡樂黃金礦工</h3>
+            <p class="game-desc">看準時機發射擺動的鉤爪！抓取帶有正確答案的黃金，避開沉重的石頭！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="sparkles"></i> 鉤爪物理</span>
+              <button class="btn btn-neon-gold start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+
+          <!-- Card 13: Inequality Arena -->
+          <div class="game-card card-arena locked" data-game="arena">
+            <div class="card-glow"></div>
+            <div class="game-badge">動作對戰</div>
+            <div class="card-icon">⚔️</div>
+            <h3 class="game-title">世界名人堂對戰場</h3>
+            <p class="game-desc">一元一次不等式與世界名人堂的大對決！解題畫出數線攻擊魔王，或是回答名人堂題目進行複習對戰！</p>
+            <div class="card-footer">
+              <span class="game-meta"><i data-lucide="shield"></i> 名人堂與不等式</span>
+              <button class="btn btn-neon-gold start-game-btn" disabled>開始遊戲</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Session History (Bottom Panel) -->
+      <section class="panel glass-panel history-panel full-width">
+        <h2 class="panel-title"><i data-lucide="history"></i> 本次挑戰記錄</h2>
+        <div class="history-table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>遊戲名稱</th>
+                <th>玩家姓名</th>
+                <th>答對題數</th>
+                <th>總題數</th>
+                <th>總得分</th>
+                <th>上傳狀態</th>
+                <th>時間</th>
+              </tr>
+            </thead>
+            <tbody id="history-list">
+              <tr class="empty-row">
+                <td colspan="7">尚未有遊玩記錄，快開始第一局吧！</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- Game Stage Overlays -->
+  <div id="game-stage" class="game-stage hidden">
+    <div class="game-stage-header">
+      <button id="btn-exit-game" class="btn btn-sm btn-outline-danger">
+        <i data-lucide="arrow-left"></i> 退出遊戲
+      </button>
+      <div id="game-stage-title" class="game-stage-title">大富翁</div>
+      <div class="game-stage-player-info">
+        <span class="player-pill"><i data-lucide="user"></i> <span id="game-player-name">王小明</span></span>
+        <span class="score-pill"><i data-lucide="award"></i> 得分: <span id="game-score">0</span></span>
+        <span class="timer-pill"><i data-lucide="clock"></i> 時間: <span id="game-timer">00:00</span></span>
+      </div>
+    </div>
+    
+    <!-- Dynamic Game Body Area -->
+    <div id="game-body" class="game-body">
+      <!-- Game specific code will inject here -->
+    </div>
+  </div>
+
+  <!-- Settings Modal (Glassmorphism overlay) -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal glass-panel animate-scale">
+      <div class="modal-header">
+        <h2><i data-lucide="settings"></i> 資料庫串接設定</h2>
+        <button id="close-settings" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">本遊戲透過 Google Apps Script Web App 將題目與成績直接寫入您的 Google 試算表中。</p>
+        
+        <div class="form-group">
+          <label for="settings-api-url">Google Apps Script Web App API 網址</label>
+          <input type="url" id="settings-api-url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
+          <span class="input-help">請輸入您部署的 Google Apps Script 網頁應用程式 URL</span>
+        </div>
+
+        <div class="info-box">
+          <h3>💡 快速設定三步驟：</h3>
+          <ol>
+            <li>在您的題目 Google 試算表中，點選<strong>擴充功能 > Apps Script</strong>。</li>
+            <li>將專案中的 <code>backend/Code.js</code> 代碼複製貼入，並存檔。</li>
+            <li>點選右上角<strong>部署 > 新增部署</strong>，類型選「網頁應用程式」，將存取權設為「任何人 (Anyone)」，部署後將 Web App 網址貼於上方。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-test-api" class="btn btn-neon-blue">
+          <i data-lucide="refresh-cw"></i> 測試連線並儲存
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generic Question Overlay Modal (Used in games) -->
+  <div id="question-modal" class="modal-overlay hidden">
+    <div class="modal question-modal-content glass-panel animate-scale">
+      <div class="question-header">
+        <span class="question-badge"><i data-lucide="help-circle"></i> 答題挑戰</span>
+        <div id="question-timer-bar" class="timer-bar"></div>
+      </div>
+      <div class="question-body">
+        <h3 id="modal-question-text" class="question-text">這是問題內容？</h3>
+        <div id="modal-options-container" class="options-grid">
+          <!-- Options injected here -->
+        </div>
+        <div id="modal-feedback" class="question-feedback hidden">
+          <p id="modal-feedback-text">答錯了！正確答案是 C</p>
+          <p id="modal-explanation-text" class="explanation-text">解析：這裡是詳細解析說明。</p>
+        </div>
+      </div>
+      <div class="question-footer">
+        <button id="btn-next-question" class="btn btn-neon-green hidden">確認 / 下一步</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform scripts -->
+  <script src="app.js"></script>
+  <script src="games/monopoly.js"></script>
+  <script src="games/match.js"></script>
+  <script src="games/mole.js"></script>
+  <script src="games/treasure.js"></script>
+  <script src="games/shooter.js"></script>
+  <script src="games/racer.js"></script>
+  <script src="games/archery.js"></script>
+  <script src="games/jumper.js"></script>
+  <script src="games/flip.js"></script>
+  <script src="games/puzzle.js"></script>
+  <script src="games/balloon.js"></script>
+  <script src="games/miner.js"></script>
+  <script src="games/arena.js"></script>
+</body>
+</html>
