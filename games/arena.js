@@ -8,7 +8,7 @@ const ArenaGame = {
   timeLeft: 90,
   timerInterval: null,
   
-  mode: null, // 'math' or 'quiz'
+  mode: 'quiz',
   playerHp: 100,
   bossHp: 100,
   bossLevel: 1,
@@ -16,13 +16,7 @@ const ArenaGame = {
   correctCount: 0,
   wrongCount: 0,
   
-  currentQuestion: null, // for quiz mode
-  currentIneq: null, // for math mode
-  
-  // Math mode state:
-  selectedVal: 0, // boundary value on number line
-  selectedDot: 'hollow', // 'hollow' or 'solid'
-  selectedDir: 'left', // 'left' or 'right'
+  currentQuestion: null,
   
   bossAvatars: ['👹', '🐉', '👿', '👾', '🧛', '🧙'],
   bossNames: ['數字小鬼', '不等式巨龍', '負號魔王', '未知數怪物', '分數吸血鬼', '變號大魔法師'],
@@ -41,37 +35,7 @@ const ArenaGame = {
     document.getElementById('game-score').textContent = this.score;
     document.getElementById('game-timer').textContent = `時限: 90s`;
     
-    this.renderModeSelect();
-  },
-
-  renderModeSelect() {
-    this.container.innerHTML = `
-      <div class="arena-wrapper">
-        <div class="arena-mode-select glass-panel animate-scale">
-          <h3>⚔️ 世界名人堂對戰場 ⚔️</h3>
-          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">請選擇您的挑戰模式：</p>
-          <div class="arena-modes">
-            <button class="btn btn-neon-blue" id="btn-mode-math">
-              <i data-lucide="calculator"></i> 不等式挑戰 (數學數線)
-            </button>
-            <button class="btn btn-neon-pink" id="btn-mode-quiz">
-              <i data-lucide="book-open"></i> 世界名人堂挑戰 (自訂題庫)
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-    lucide.createIcons();
-
-    document.getElementById('btn-mode-math').addEventListener('click', () => {
-      SoundFX.playCoin();
-      this.startCombat('math');
-    });
-
-    document.getElementById('btn-mode-quiz').addEventListener('click', () => {
-      SoundFX.playCoin();
-      this.startCombat('quiz');
-    });
+    this.startCombat('quiz');
   },
 
   startCombat(mode) {
@@ -131,89 +95,14 @@ const ArenaGame = {
 
         <!-- Controls panel -->
         <div class="arena-input-panel glass-panel">
-          <!-- Math controls -->
-          <div id="arena-math-controls" class="hidden">
-            <div class="arena-question-text" id="arena-ineq-question">載入中...</div>
-            <div class="number-line-instructions">
-              💡 點擊下方數線設定臨界點，並設定空心/實心與射線方向：
-            </div>
-            
-            <div class="arena-svg-container" id="arena-svg-wrapper"></div>
-            
-            <div class="number-line-toggles">
-              <div class="toggle-group">
-                <span class="toggle-label">端點類型：</span>
-                <button class="btn btn-sm btn-outline-cyan active" id="btn-dot-hollow">○ 空心 (&lt; 或 &gt;)</button>
-                <button class="btn btn-sm btn-outline-cyan" id="btn-dot-solid">● 實心 (≦ 或 ≧)</button>
-              </div>
-              <div class="toggle-group">
-                <span class="toggle-label">射線方向：</span>
-                <button class="btn btn-sm btn-outline-magenta active" id="btn-dir-left">← 往左 (較小)</button>
-                <button class="btn btn-sm btn-outline-magenta" id="btn-dir-right">往右 (較大) →</button>
-              </div>
-            </div>
-            
-            <div class="action-row">
-              <button class="btn btn-neon-green" style="padding:0.75rem 2rem; font-size:1rem;" id="btn-arena-submit-math">⚔️ 施展不等式斬！</button>
-            </div>
-          </div>
-
           <!-- Quiz controls -->
-          <div id="arena-quiz-controls" class="hidden">
+          <div id="arena-quiz-controls">
             <div class="arena-question-text" id="arena-quiz-question">載入中...</div>
             <div class="arena-quiz-options" id="arena-quiz-options"></div>
           </div>
         </div>
       </div>
     `;
-
-    // Bind math controls toggles
-    if (this.mode === 'math') {
-      document.getElementById('arena-math-controls').classList.remove('hidden');
-      
-      const btnHollow = document.getElementById('btn-dot-hollow');
-      const btnSolid = document.getElementById('btn-dot-solid');
-      const btnLeft = document.getElementById('btn-dir-left');
-      const btnRight = document.getElementById('btn-dir-right');
-
-      btnHollow.addEventListener('click', () => {
-        SoundFX.playClick();
-        this.selectedDot = 'hollow';
-        btnHollow.classList.add('active');
-        btnSolid.classList.remove('active');
-        this.drawNumberLine();
-      });
-
-      btnSolid.addEventListener('click', () => {
-        SoundFX.playClick();
-        this.selectedDot = 'solid';
-        btnSolid.classList.add('active');
-        btnHollow.classList.remove('active');
-        this.drawNumberLine();
-      });
-
-      btnLeft.addEventListener('click', () => {
-        SoundFX.playClick();
-        this.selectedDir = 'left';
-        btnLeft.classList.add('active');
-        btnRight.classList.remove('active');
-        this.drawNumberLine();
-      });
-
-      btnRight.addEventListener('click', () => {
-        SoundFX.playClick();
-        this.selectedDir = 'right';
-        btnRight.classList.add('active');
-        btnLeft.classList.remove('active');
-        this.drawNumberLine();
-      });
-
-      document.getElementById('btn-arena-submit-math').addEventListener('click', () => {
-        this.submitMathAnswer();
-      });
-    } else {
-      document.getElementById('arena-quiz-controls').classList.remove('hidden');
-    }
   },
 
   updateHpUI() {
@@ -261,212 +150,7 @@ const ArenaGame = {
       return;
     }
 
-    if (this.mode === 'math') {
-      this.generateMathProblem();
-    } else {
-      this.generateQuizProblem();
-    }
-  },
-
-  generateMathProblem() {
-    // Math Generation logic
-    // We want the inequality: ax + b operator c
-    // with answer: x operatorVal targetVal
-    // where operatorVal is inverted if a < 0.
-    
-    const operators = ['>', '<', '>=', '<='];
-    const selectedOp = operators[Math.floor(Math.random() * operators.length)];
-    
-    // Choose correct critical value inside [-6, 6]
-    const correctVal = Math.floor(Math.random() * 13) - 6; // -6 to 6
-    
-    // Choose coefficient a from {-3, -2, 2, 3}
-    const coeffs = [-3, -2, 2, 3];
-    const a = coeffs[Math.floor(Math.random() * coeffs.length)];
-    
-    // Choose constant b from [-8, 8] excluding 0
-    let b = 0;
-    while (b === 0) {
-      b = Math.floor(Math.random() * 17) - 8;
-    }
-    
-    // Calculate right side constant c
-    const c = a * correctVal + b;
-    
-    // Format question string nicely
-    let leftSide = "";
-    if (a === 1) leftSide = "x";
-    else if (a === -1) leftSide = "-x";
-    else leftSide = `${a}x`;
-    
-    if (b > 0) leftSide += ` + ${b}`;
-    else leftSide += ` - ${Math.abs(b)}`;
-    
-    // Map operator symbol to nice HTML
-    let opSymbol = "";
-    if (selectedOp === '>') opSymbol = "＞";
-    else if (selectedOp === '<') opSymbol = "＜";
-    else if (selectedOp === '>=') opSymbol = "≧";
-    else if (selectedOp === '<=') opSymbol = "≦";
-    
-    const problemStr = `請解不等式： ${leftSide} ${opSymbol} ${c}`;
-    document.getElementById('arena-ineq-question').textContent = problemStr;
-    
-    // Compute correct mathematical boundaries for checking later:
-    // If a < 0, direction is flipped
-    let correctDir = "";
-    let correctDot = "";
-    
-    if (selectedOp === '>' || selectedOp === '>=') {
-      correctDir = a > 0 ? 'right' : 'left';
-    } else {
-      correctDir = a > 0 ? 'left' : 'right';
-    }
-    
-    if (selectedOp === '>=' || selectedOp === '<=') {
-      correctDot = 'solid';
-    } else {
-      correctDot = 'hollow';
-    }
-    
-    let simplifiedOpSymbol = opSymbol;
-    if (a < 0) {
-      if (selectedOp === '>') simplifiedOpSymbol = "＜";
-      else if (selectedOp === '<') simplifiedOpSymbol = "＞";
-      else if (selectedOp === '>=') simplifiedOpSymbol = "≦";
-      else if (selectedOp === '<=') simplifiedOpSymbol = "≧";
-    }
-    
-    this.currentIneq = {
-      correctVal: correctVal,
-      correctDot: correctDot,
-      correctDir: correctDir,
-      display: `${leftSide} ${opSymbol} ${c}  ⇒  x ${simplifiedOpSymbol} ${correctVal} (已化簡)`
-    };
-    
-    // Reset inputs
-    this.selectedVal = 0;
-    // Default toggles matching UI state
-    document.getElementById('btn-dot-hollow').classList.add('active');
-    document.getElementById('btn-dot-solid').classList.remove('active');
-    document.getElementById('btn-dir-left').classList.add('active');
-    document.getElementById('btn-dir-right').classList.remove('active');
-    
-    this.selectedDot = 'hollow';
-    this.selectedDir = 'left';
-    
-    this.drawNumberLine();
-  },
-
-  drawNumberLine() {
-    const wrapper = document.getElementById('arena-svg-wrapper');
-    if (!wrapper) return;
-
-    const width = Math.min(650, wrapper.clientWidth || 550);
-    const height = 65;
-    
-    // Ticks range: -8 to 8
-    const minVal = -8;
-    const maxVal = 8;
-    const span = maxVal - minVal;
-    
-    const padLeft = width * 0.06;
-    const padRight = width * 0.06;
-    const graphWidth = width - padLeft - padRight;
-    
-    const getX = (val) => {
-      return padLeft + ((val - minVal) / span) * graphWidth;
-    };
-    
-    // Build ticks HTML
-    let ticksHtml = "";
-    for (let v = minVal; v <= maxVal; v++) {
-      const cx = getX(v);
-      ticksHtml += `
-        <line x1="${cx}" y1="23" x2="${cx}" y2="33" stroke="var(--text-muted)" stroke-width="1.5"/>
-        <text x="${cx}" y="48" fill="var(--text-muted)" font-size="11" font-weight="600" text-anchor="middle" style="user-select:none;">${v}</text>
-      `;
-    }
-
-    // Selected state geometry
-    const dotX = getX(this.selectedVal);
-    const arrowStroke = this.selectedDir === 'left' ? 'var(--neon-pink)' : 'var(--neon-blue)';
-    const arrowGlow = this.selectedDir === 'left' ? 'var(--neon-pink-glow)' : 'var(--neon-blue-glow)';
-    
-    let rayLine = "";
-    let arrowhead = "";
-    
-    if (this.selectedDir === 'left') {
-      const startX = getX(minVal) - 8;
-      rayLine = `<line x1="${startX}" y1="28" x2="${dotX}" y2="28" stroke="${arrowStroke}" stroke-width="3.5" style="filter: drop-shadow(0 0 4px ${arrowGlow})"/>`;
-      // left arrow cap
-      arrowhead = `<polygon points="${startX},28 ${startX+8},24 ${startX+8},32" fill="${arrowStroke}"/>`;
-    } else {
-      const startX = getX(maxVal) + 8;
-      rayLine = `<line x1="${dotX}" y1="28" x2="${startX}" y2="28" stroke="${arrowStroke}" stroke-width="3.5" style="filter: drop-shadow(0 0 4px ${arrowGlow})"/>`;
-      // right arrow cap
-      arrowhead = `<polygon points="${startX},28 ${startX-8},24 ${startX-8},32" fill="${arrowStroke}"/>`;
-    }
-
-    // Boundary dot
-    const dotFill = this.selectedDot === 'solid' ? arrowStroke : 'var(--bg-color)';
-    const boundaryDot = `<circle cx="${dotX}" cy="28" r="6.5" fill="${dotFill}" stroke="${arrowStroke}" stroke-width="3" />`;
-
-    // Full SVG Construction
-    wrapper.innerHTML = `
-      <svg width="${width}" height="${height}" style="overflow:visible; cursor:crosshair;" id="arena-number-line-svg">
-        <!-- Main Line -->
-        <line x1="${getX(minVal) - 10}" y1="28" x2="${getX(maxVal) + 10}" y2="28" stroke="var(--text-main)" stroke-width="2.5"/>
-        
-        <!-- Range Ray & Arrowhead -->
-        ${rayLine}
-        ${arrowhead}
-        
-        <!-- Tickmarks & labels -->
-        ${ticksHtml}
-        
-        <!-- Boundary Dot -->
-        ${boundaryDot}
-      </svg>
-    `;
-
-    // Click handler to position the dot
-    const svgEl = document.getElementById('arena-number-line-svg');
-    svgEl.addEventListener('click', (e) => {
-      const rect = svgEl.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      
-      // Find closest tick value
-      let closestVal = minVal;
-      let closestDist = Infinity;
-      
-      for (let v = minVal; v <= maxVal; v++) {
-        const tx = getX(v);
-        const dist = Math.abs(clickX - tx);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closestVal = v;
-        }
-      }
-      
-      // Bound it within valid solving range
-      if (closestVal >= -7 && closestVal <= 7) {
-        SoundFX.playClick();
-        this.selectedVal = closestVal;
-        this.drawNumberLine();
-      }
-    });
-  },
-
-  submitMathAnswer() {
-    const answer = this.currentIneq;
-    const isCorrect = (
-      this.selectedVal === answer.correctVal &&
-      this.selectedDot === answer.correctDot &&
-      this.selectedDir === answer.correctDir
-    );
-
-    this.handleCombatResult(isCorrect, answer.display);
+    this.generateQuizProblem();
   },
 
   generateQuizProblem() {
@@ -573,10 +257,7 @@ const ArenaGame = {
         this.showDamageEffect(playerEl, `-${damage} HP`, true);
         this.updateHpUI();
         
-        // Show overlay explanation if in math mode
-        if (this.mode === 'math') {
-          alert(`答錯了！\n解答解析：${feedbackText}`);
-        } else if (feedbackText) {
+        if (feedbackText) {
           alert(`答錯了！\n解析：${feedbackText}`);
         }
         
