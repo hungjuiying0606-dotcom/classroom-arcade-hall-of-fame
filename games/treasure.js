@@ -16,6 +16,8 @@ const TreasureGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 100;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(30);
+    this.questionsPoolIndex = 0;
     this.health = 3;
     this.playerPos = { r: 0, c: 0 };
     this.questionsAnswered = 0;
@@ -34,7 +36,7 @@ const TreasureGame = {
     for (let i = 0; i < 3; i++) {
       hearts += i < this.health ? "❤️" : "🖤";
     }
-    document.getElementById('game-timer').textContent = `生命: ${hearts}`;
+    document.getElementById('game-timer').textContent = `生命: ${hearts} | 進度: ${this.questionsAnswered}/20 題`;
   },
 
   generateMap() {
@@ -103,7 +105,12 @@ const TreasureGame = {
         }
 
         // Show contents if cleared path
-        if (cell.type === 'path') {
+        if (cell.type === 'chest' && this.questionsAnswered < 20) {
+      SoundFX.playFail();
+      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 20 題才能開啟它！請先去其他格子答題。`);
+      return;
+    }
+    if (cell.type === 'path') {
           if (cell.content === 'gold') tile.textContent = '🪙';
           else if (cell.content === 'trap') tile.textContent = '🕸️';
           else if (r !== 0 || c !== 0) tile.textContent = '👣';
@@ -137,6 +144,11 @@ const TreasureGame = {
     }
 
     // If already clear path, move instantly
+    if (cell.type === 'chest' && this.questionsAnswered < 20) {
+      SoundFX.playFail();
+      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 20 題才能開啟它！請先去其他格子答題。`);
+      return;
+    }
     if (cell.type === 'path') {
       SoundFX.playClick();
       this.playerPos = { r: cell.r, c: cell.c };
@@ -146,7 +158,8 @@ const TreasureGame = {
     }
 
     // If foggy or chest, trigger question challenge
-    const q = ArcadeState.questions[Math.floor(Math.random() * ArcadeState.questions.length)];
+    const q = this.sessionQuestions[this.questionsPoolIndex];
+    this.questionsPoolIndex = (this.questionsPoolIndex + 1) % this.sessionQuestions.length;
     this.questionsAnswered++;
 
     // Convert simplified Q&A format to 4-choice format
@@ -220,7 +233,7 @@ const TreasureGame = {
 
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">${isWin ? "🎁 尋得大寶藏！" : "💀 探險失敗"}</div>
+        <div class="win-title">${isWin ? "🎁 尋得大寶藏！" : "💀 💀 挑戰結束"}</div>
         <p>${isWin ? "你越過重重迷霧與考驗，成功開啟了終極寶箱！" : "你的生命值已耗盡，迷失在了荒島迷霧中..."}</p>
         <div class="win-score">SCORE: ${finalScore}</div>
         <div style="font-size:0.9rem; margin-top:-0.5rem; color:var(--text-muted)">

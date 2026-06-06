@@ -5,160 +5,204 @@
 // 1. Demo Mode Fallback Questions Database
 const DEMO_QUESTIONS = [
   {
-    question: "諾貝爾是哪個國家的人？",
-    answer: "瑞典"
+    "question": "諾貝爾是哪個國家的人？",
+    "options": ["英國", "瑞典", "美國", "德國"],
+    "answer": "瑞典"
   },
   {
-    question: "陪伴愛因斯坦一生，甚至能登台演奏的樂器是什麼？",
-    answer: "小提琴"
+    "question": "陪伴愛因斯坦一生，甚至能登台演奏的樂器是什麼？",
+    "options": ["鋼琴", "吉他", "長笛", "小提琴"],
+    "answer": "小提琴"
   },
   {
-    question: "哈伯在擔任天文學家前，曾經擔任哪一項工作？",
-    answer: "律師"
+    "question": "哈伯在擔任天文學家前，曾經擔任哪一項工作？",
+    "options": ["律師", "醫生", "畫家", "廚師"],
+    "answer": "律師"
   },
   {
-    question: "查爾斯·達爾文的父親及祖父的職業是什麼？",
-    answer: "律師"
+    "question": "查爾斯·達爾文的父親及祖父的職業是什麼？",
+    "options": ["牧師", "鐵匠", "醫生", "律師"],
+    "answer": "醫生"
   },
   {
-    question: "搞笑諾貝爾獎的獎金是多少？",
-    answer: "不會有任何獎金"
+    "question": "搞笑諾貝爾獎的獎金是多少？",
+    "options": ["1000萬瑞典克朗", "不會有任何獎金", "400萬美元", "3200萬新台幣"],
+    "answer": "不會有任何獎金"
   },
   {
-    question: "現代物理學之父是誰？",
-    answer: "愛因斯坦"
+    "question": "現代物理學之父是誰？",
+    "options": ["牛頓", "愛因斯坦", "伽利略", "哈伯"],
+    "answer": "愛因斯坦"
   },
   {
-    question: "星系天文學之父是指哪一位科學家？",
-    answer: "哈伯"
+    "question": "星系天文學之父是指哪一位科學家？",
+    "options": ["哈伯", "伽利略", "牛頓", "哥白尼"],
+    "answer": "哈伯"
   },
   {
-    question: "達爾文死後在哪裡安葬？",
-    answer: "西敏寺"
+    "question": "達爾文死後在哪裡安葬？",
+    "options": ["太平洋", "巴黎鐵塔", "金字塔", "西敏寺"],
+    "answer": "西敏寺"
   },
   {
-    question: "搞笑諾貝爾獎是向什麼致敬（授予什麼成就）？",
-    answer: "乍看好笑後引人深思"
+    "question": "搞笑諾貝爾獎是向什麼致敬（授予什麼成就）？",
+    "options": ["乍看好笑後引人深思", "最無聊的成就", "最花錢的成就", "寵物安東尼旺的研究"],
+    "answer": "乍看好笑後引人深思"
   },
   {
-    question: "愛因斯坦的「奇蹟之年」是哪一年？",
-    answer: "1905年"
+    "question": "愛因斯坦的「奇蹟之年」是哪一年？",
+    "options": ["1905年", "1879年", "1955年", "1914年"],
+    "answer": "1905年"
   },
   {
-    question: "諾貝爾是什麼時候出生？",
-    answer: "1833年"
+    "question": "諾貝爾是什麼時候出生？",
+    "options": ["1896年", "1901年", "1833年", "1862年"],
+    "answer": "1833年"
   },
   {
-    question: "諾貝爾在哪一年去世的？",
-    answer: "1896年"
+    "question": "諾貝爾在哪一年去世的？",
+    "options": ["1901年", "1833年", "1864年", "1896年"],
+    "answer": "1896年"
   },
   {
-    question: "諾貝爾的主要研究領域是什麼？",
-    answer: "炸藥製造"
+    "question": "諾貝爾的主要研究領域是什麼？",
+    "options": ["炸藥製造", "天文學", "生理醫學", "文學"],
+    "answer": "炸藥製造"
   },
   {
-    question: "為什麼諾貝爾要創立諾貝爾獎？",
-    answer: "獎勵對人類社會有最大貢獻的人"
+    "question": "為什麼諾貝爾要創立諾貝爾獎？",
+    "options": ["為了自己出名", "為了賺取利息", "獎勵對人類社會有最大貢獻的人", "為了推廣炸藥"],
+    "answer": "獎勵對人類社會有最大貢獻的人"
   },
   {
-    question: "諾貝爾獎總共分為多少個類別的獎項(原始設立)？",
-    answer: "5個"
+    "question": "諾貝爾獎總共分為多少個類別的獎項(原始設立)？",
+    "options": ["3個", "6個", "10個", "5個"],
+    "answer": "5個"
   },
   {
-    question: "諾貝爾獎的頒獎儀式在哪裡舉行？",
-    answer: "瑞典"
+    "question": "諾貝爾獎的頒獎儀式在哪裡舉行？",
+    "options": ["美國", "英國", "法國", "瑞典"],
+    "answer": "瑞典"
   },
   {
-    question: "諾貝爾獎的頒獎典禮在每年的哪個日期舉行？",
-    answer: "2026/12/10"
+    "question": "諾貝爾獎的頒獎典禮在每年的哪個日期舉行？",
+    "options": ["10月21日", "1月1日", "12月10日", "12月25日"],
+    "answer": "12月10日"
   },
   {
-    question: "什麼是搞笑諾貝爾獎？",
-    answer: "對諾貝爾獎的有趣模仿"
+    "question": "什麼是搞笑諾貝爾獎？",
+    "options": ["發給喜劇演員的獎", "真正的諾貝爾獎", "獎金最高的獎項", "對諾貝爾獎的有趣模仿"],
+    "answer": "對諾貝爾獎的有趣模仿"
   },
   {
-    question: "搞笑諾貝爾獎的頒獎儀式在哪裡舉行？",
-    answer: "哈佛大學"
+    "question": "搞笑諾貝爾獎的頒獎儀式在哪裡舉行？",
+    "options": ["劍橋大學", "牛津大學", "哈佛大學", "瑞典皇家科學院"],
+    "answer": "哈佛大學"
   },
   {
-    question: "愛因斯坦是哪個國家的人？",
-    answer: "德國"
+    "question": "愛因斯坦是哪個國家的人？",
+    "options": ["德國", "英國", "瑞士", "美國"],
+    "answer": "德國"
   },
   {
-    question: "愛因斯坦在美國的哪所大學擔任教職？",
-    answer: "普林斯頓大學"
+    "question": "愛因斯坦在美國的哪所大學擔任教職？",
+    "options": ["柏林大學", "蘇黎世大學", "哈佛大學", "普林斯頓大學"],
+    "answer": "普林斯頓大學"
   },
   {
-    question: "愛因斯坦得過哪一種諾貝爾獎？",
-    answer: "物理學獎"
+    "question": "愛因斯坦得過哪一種諾貝爾獎？",
+    "options": ["化學獎", "和平獎", "物理學獎", "數學獎"],
+    "answer": "物理學獎"
   },
   {
-    question: "質能互換方程式是指哪一個方程式？",
-    answer: "E=mc2"
+    "question": "質能互換方程式是指哪一個方程式？",
+    "options": ["F=ma", "V=IR", "E=mc2", "P=IV"],
+    "answer": "E=mc2"
   },
   {
-    question: "科學家們因為愛因斯坦提出的哪個理論，而開始了核分裂的研究？",
-    answer: "狹義相對論(質能互換)"
+    "question": "科學家們因為愛因斯坦提出的哪個理論，而開始了核分裂的研究？",
+    "options": ["狹義相對論(質能互換)", "廣義相對論", "光電效應", "量子理論"],
+    "answer": "狹義相對論(質能互換)"
   },
   {
-    question: "愛因斯坦的研究間接促成核分裂的應用，例如下列何者？",
-    answer: "原子彈"
+    "question": "愛因斯坦的研究間接促成核分裂的應用，例如下列何者？",
+    "options": ["炸藥", "雷達", "望遠鏡", "原子彈"],
+    "answer": "原子彈"
   },
   {
-    question: "埃德溫·哈伯是在哪一年出生？",
-    answer: "1889年"
+    "question": "埃德溫·哈伯是在哪一年出生？",
+    "options": ["1879年", "1910年", "1889年", "1953年"],
+    "answer": "1889年"
   },
   {
-    question: "埃德溫·哈伯在西元1919年獲得哪一個天文台聘用，成為終身職位？",
-    answer: "威爾森天文台"
+    "question": "埃德溫·哈伯在西元1919年獲得哪一個天文台聘用，成為終身職位？",
+    "options": ["威爾森天文台", "格林威治天文台", "巴黎天文台", "帕洛馬天文台"],
+    "answer": "威爾森天文台"
   },
   {
-    question: "哈伯證實了銀河系外其他星系存在，並發現星系紅移現象，建立了什麼定律？",
-    answer: "哈伯定律"
+    "question": "哈伯證實了銀河系外其他星系存在，並發現星系紅移現象，建立了什麼定律？",
+    "options": ["虎克定律", "萬有引力定律", "慣性定律", "哈伯定律"],
+    "answer": "哈伯定律"
   },
   {
-    question: "哈伯定律指出遙遠星系的退行速度與距離成正比，為哪一個理論提出了有力支持？",
-    answer: "宇宙大爆炸理論"
+    "question": "哈伯定律指出遙遠星系的退行速度與距離成正比，為哪一個理論提出了有力支持？",
+    "options": ["宇宙大爆炸理論", "天擇說", "日心說", "相對論"],
+    "answer": "宇宙大爆炸理論"
   },
   {
-    question: "以天文學家愛德溫·哈伯來命名，在地球軌道上運行的太空望遠鏡是哪一座？",
-    answer: "哈伯太空望遠鏡"
+    "question": "以天文學家愛德溫·哈伯來命名，在地球軌道上運行的太空望遠鏡是哪一座？",
+    "options": ["韋伯太空望遠鏡", "哈伯太空望遠鏡", "克卜勒望遠鏡", "伽利略望遠鏡"],
+    "answer": "哈伯太空望遠鏡"
   },
   {
-    question: "哈伯太空望遠鏡的高解析影像被用來證實何者存在於星系核中的學說？",
-    answer: "黑洞"
+    "question": "哈伯太空望遠鏡的高解析影像被用來證實何者存在於星系核中的學說？",
+    "options": ["外星人", "彗星", "黑洞", "太陽"],
+    "answer": "黑洞"
   },
   {
-    question: "將太空望遠鏡發射到地球軌道上運行的好處是什麼？",
-    answer: "影像不受大氣湍流擾動"
+    "question": "將太空望遠鏡發射到地球軌道上運行的好處是什麼？",
+    "options": ["比較便宜", "不受重力影響", "離外星人比較近", "影像不受大氣湍流擾動"],
+    "answer": "影像不受大氣湍流擾動"
   },
   {
-    question: "查爾斯·達爾文是哪個國家的科學家？",
-    answer: "英國"
+    "question": "查爾斯·達爾文是哪個國家的科學家？",
+    "options": ["美國", "英國", "德國", "義大利"],
+    "answer": "英國"
   },
   {
-    question: "達爾文因提出哪一套理論而聞名？",
-    answer: "天擇說(演化論)"
+    "question": "達爾文因提出哪一套理論而聞名？",
+    "options": ["大陸漂移說", "相對論", "天擇說(演化論)", "萬有引力"],
+    "answer": "天擇說(演化論)"
   },
   {
-    question: "下列何者「不是」達爾文天擇說的四個重要主張？",
-    answer: "用進廢退"
+    "question": "下列何者「不是」達爾文天擇說的四個重要主張？",
+    "options": ["用進廢退", "個體差異", "過度繁殖", "適者生存"],
+    "answer": "用進廢退"
   },
   {
-    question: "下列哪一本是達爾文所寫的著名書籍？",
-    answer: "物種起源"
+    "question": "下列哪一本是達爾文所寫的著名書籍？",
+    "options": ["陸與海的起源", "雙螺旋", "物種起源", "靈憲"],
+    "answer": "物種起源"
   },
   {
-    question: "得到哪一種疾病的人因為紅血球變形，可以免除瘧疾的危害？",
-    answer: "蠶豆症"
+    "question": "得到哪一種疾病的人因為紅血球變形，可以免除瘧疾的危害？",
+    "options": ["白血病", "蠶豆症", "糖尿病", "血友病"],
+    "answer": "蠶豆症"
   },
   {
-    question: "在達爾文時代，演化論被視為新奇想法，如果公開會被教會視為什麼？",
-    answer: "異端邪說"
+    "question": "達爾文發現生物過度繁殖，但地球上的什麼是有限的，導致生存競爭？",
+    "options": ["資源(食物和空間)", "空氣", "陽光", "水分"],
+    "answer": "資源(食物和空間)"
   },
   {
-    question: "長頸鹿面對高樹木的環境，脖子長的更容易活下來傳遞特點，這符合哪一項概念？",
-    answer: "適者生存"
+    "question": "在達爾文時代，演化論被視為新奇想法，如果公開會被教會視為什麼？",
+    "options": ["偉大真理", "上帝的啟示", "法律規定", "異端邪說"],
+    "answer": "異端邪說"
+  },
+  {
+    "question": "長頸鹿面對高樹木的環境，脖子長的更容易活下來傳遞特點，這符合哪一項概念？",
+    "options": ["個體差異", "適者生存", "過度繁殖", "人工生殖"],
+    "answer": "適者生存"
   }
 ];
 
@@ -255,10 +299,18 @@ const ArcadeState = {
 
   getMultipleChoiceQuestion(q) {
     if (q.options && Array.isArray(q.options)) {
+      let ansIndex = 0;
+      if (typeof q.answer === 'number') {
+        ansIndex = q.answer;
+      } else {
+        const correctText = q.answer.toString().trim();
+        const foundIndex = q.options.findIndex(opt => opt.toString().trim() === correctText);
+        ansIndex = foundIndex !== -1 ? foundIndex : 0;
+      }
       return {
         question: q.question,
         options: q.options,
-        answer: typeof q.answer === 'number' ? q.answer : parseInt(q.answer) || 0,
+        answer: ansIndex,
         explanation: q.explanation || ""
       };
     }
@@ -296,6 +348,11 @@ const ArcadeState = {
       answer: correctIndex,
       explanation: q.explanation || ""
     };
+  },
+
+  getRandomQuestions(count = 20) {
+    const shuffled = this.shuffleArray([...this.questions]);
+    return shuffled.slice(0, Math.min(count, shuffled.length));
   },
 
   shuffleArray(arr) {

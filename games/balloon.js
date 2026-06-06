@@ -22,6 +22,8 @@ const BalloonGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.lives = 10;
     this.timeLeft = 60;
     this.correctCount = 0;
@@ -106,8 +108,12 @@ const BalloonGame = {
   },
 
   nextQuestion() {
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     document.getElementById('balloon-question-text').textContent = this.currentQuestion.question;
@@ -292,7 +298,7 @@ const BalloonGame = {
 
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">${this.lives <= 0 ? "🎈 氣球全部漏掉！遊戲結束" : "⏰ 時間到！遊戲結束"}</div>
+        <div class="win-title">${this.lives <= 0 ? "🎈 氣球全部漏掉！遊戲結束" : "🏆 挑戰完成！"}</div>
         <p>你在歡樂氣球派對的表現相當亮眼！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">戳破正確氣球: ${this.correctCount} 次 / 總敲擊次數: ${this.totalPops} 次</p>

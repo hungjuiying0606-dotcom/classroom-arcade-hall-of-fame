@@ -55,10 +55,13 @@ const MonopolyGame = {
     this.isMoving = false;
     this.isJailed = false;
     
+    this.sessionQuestions = ArcadeState.getRandomQuestions(30);
+    this.questionsPoolIndex = 0;
+    
     // Update platform UI headers
     document.getElementById('game-stage-title').textContent = "知識大富翁";
     document.getElementById('game-score').textContent = this.score;
-    document.getElementById('game-timer').textContent = "Laps: 0 / 2";
+    document.getElementById('game-timer').textContent = "進度: 0 / 20 題";
     
     this.renderBoard();
     this.updateTokenPosition();
@@ -215,8 +218,8 @@ const MonopolyGame = {
     }
     
     else if (cell.type === "question") {
-      // Pick a random question
-      const q = ArcadeState.questions[Math.floor(Math.random() * ArcadeState.questions.length)];
+      const q = this.sessionQuestions[this.questionsPoolIndex];
+      this.questionsPoolIndex = (this.questionsPoolIndex + 1) % this.sessionQuestions.length;
       this.questionsAsked++;
       
       // Dynamic multiple-choice generation for Q&A format
@@ -308,7 +311,8 @@ const MonopolyGame = {
   },
 
   checkGameStatus() {
-    if (this.laps >= this.maxLaps) {
+    document.getElementById('game-timer').textContent = `進度: ${this.questionsAsked} / 20 題`;
+    if (this.questionsAsked >= 20) {
       // Game over, complete!
       SoundFX.playWin();
       this.endGame();
@@ -322,8 +326,8 @@ const MonopolyGame = {
   async endGame() {
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">🏆 繞行完成！</div>
-        <p>你順利完成了 ${this.maxLaps} 圈的大富翁旅行！</p>
+        <div class="win-title">🏆 挑戰完成！</div>
+        <p>你順利完成了 20 題的大富翁挑戰！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">答對題數: ${this.questionsCorrect} / 總回答題數: ${this.questionsAsked}</p>
         <button id="btn-win-exit" class="btn btn-neon-green">退出並登錄成績</button>

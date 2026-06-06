@@ -24,6 +24,8 @@ const ArenaGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.timeLeft = 90;
     this.playerHp = 100;
     this.bossHp = 100;
@@ -33,7 +35,7 @@ const ArenaGame = {
     
     document.getElementById('game-stage-title').textContent = "世界名人堂對戰場";
     document.getElementById('game-score').textContent = this.score;
-    document.getElementById('game-timer').textContent = `時限: 90s`;
+    document.getElementById('game-timer').textContent = `進度: 0/20 | 時限: 90s`;
     
     this.startCombat('quiz');
   },
@@ -55,7 +57,7 @@ const ArenaGame = {
     clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
-      document.getElementById('game-timer').textContent = `時限: ${this.timeLeft}s`;
+      document.getElementById('game-timer').textContent = `進度: ${this.correctCount + this.wrongCount}/20 | 時限: ${this.timeLeft}s`;
       if (this.timeLeft <= 0) {
         clearInterval(this.timerInterval);
         this.endGame(false, "時間到！");
@@ -154,9 +156,12 @@ const ArenaGame = {
   },
 
   generateQuizProblem() {
-    const qPool = ArcadeState.questions;
-    const idx = Math.floor(Math.random() * qPool.length);
-    const qObj = ArcadeState.getMultipleChoiceQuestion(qPool[idx]);
+    if (this.correctCount + this.wrongCount >= 20) {
+      this.endGame(this.playerHp > 0, this.playerHp > 0 ? "你擊敗了魔王！" : "你被擊倒了！");
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.correctCount + this.wrongCount];
+    const qObj = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     this.currentQuestion = qObj;
     
@@ -223,6 +228,7 @@ const ArenaGame = {
       this.bossHp = Math.max(0, this.bossHp - damage);
       this.score += damage * 5;
       document.getElementById('game-score').textContent = this.score;
+      document.getElementById('game-timer').textContent = `進度: ${this.correctCount + this.wrongCount}/20 | 時限: ${this.timeLeft}s`;
       
       setTimeout(() => {
         // Boss takes damage
@@ -249,6 +255,7 @@ const ArenaGame = {
       this.playerHp = Math.max(0, this.playerHp - damage);
       this.score = Math.max(0, this.score - 40);
       document.getElementById('game-score').textContent = this.score;
+      document.getElementById('game-timer').textContent = `進度: ${this.correctCount + this.wrongCount}/20 | 時限: ${this.timeLeft}s`;
       
       setTimeout(() => {
         // Player takes damage

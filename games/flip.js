@@ -23,28 +23,24 @@ const FlipGame = {
     this.matchedPairs = 0;
     this.correctCount = 0;
     this.wrongCount = 0;
-    this.timeLeft = 60;
+    this.timeLeft = 120;
     this.firstSelectedCard = null;
     this.secondSelectedCard = null;
     this.isBusy = false;
     this.cardsData = [];
+    this.round = 1;
+    this.pairsCount = 10;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
 
     document.getElementById('game-stage-title').textContent = "經典翻牌記";
     document.getElementById('game-score').textContent = this.score;
-    document.getElementById('game-timer').textContent = "時限: 60s";
+    document.getElementById('game-timer').textContent = "進度: 關卡 1/2 | 時間: 120s";
 
     this.startNewGame();
   },
 
   startNewGame() {
-    const questionsPool = [...ArcadeState.questions];
-    const selectedQuestions = [];
-
-    const countToSelect = Math.min(this.pairsCount, questionsPool.length);
-    for (let i = 0; i < countToSelect; i++) {
-      const idx = Math.floor(Math.random() * questionsPool.length);
-      selectedQuestions.push(questionsPool.splice(idx, 1)[0]);
-    }
+    const selectedQuestions = this.sessionQuestions.slice((this.round - 1) * 10, this.round * 10);
 
     const cards = [];
     selectedQuestions.forEach((q, index) => {
@@ -79,15 +75,19 @@ const FlipGame = {
     this.renderGrid();
 
     // Start timer
-    clearInterval(this.timerInterval);
-    this.timerInterval = setInterval(() => {
-      this.timeLeft--;
-      document.getElementById('game-timer').textContent = `時限: ${this.timeLeft}s`;
-      if (this.timeLeft <= 0) {
-        clearInterval(this.timerInterval);
-        this.endGame(false);
-      }
-    }, 1000);
+    if (this.round === 1) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+        this.timeLeft--;
+        document.getElementById('game-timer').textContent = `進度: 關卡 ${this.round}/2 | 時間: ${this.timeLeft}s`;
+        if (this.timeLeft <= 0) {
+          clearInterval(this.timerInterval);
+          this.endGame(false);
+        }
+      }, 1000);
+    } else {
+      document.getElementById('game-timer').textContent = `進度: 關卡 ${this.round}/2 | 時間: ${this.timeLeft}s`;
+    }
   },
 
   shuffleArray(arr) {
@@ -215,8 +215,17 @@ const FlipGame = {
         this.isBusy = false;
 
         if (this.matchedPairs >= this.pairsCount) {
-          clearInterval(this.timerInterval);
-          setTimeout(() => this.endGame(true), 500);
+          if (this.round < 2) {
+            this.round++;
+            this.matchedPairs = 0;
+            setTimeout(() => {
+              alert("第一關配對完成！即將進入第二關（另外 10 題）");
+              this.startNewGame();
+            }, 500);
+          } else {
+            clearInterval(this.timerInterval);
+            setTimeout(() => this.endGame(true), 500);
+          }
         }
       }, 500);
     } else {

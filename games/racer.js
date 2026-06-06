@@ -26,6 +26,8 @@ const RacerGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.lives = 10;
     this.timeLeft = 90; // Increased to 90s to ensure players can complete all 10 questions
     this.correctCount = 0;
@@ -51,7 +53,7 @@ const RacerGame = {
     for (let i = 0; i < 10; i++) {
       cars += i < this.lives ? "🏎️" : "💥";
     }
-    document.getElementById('game-timer').textContent = `賽車: ${cars} | 進度: ${Math.min(10, this.totalGates)}/10 | 時間: ${this.timeLeft}s`;
+    document.getElementById('game-timer').textContent = `賽車: ${cars} | 進度: ${Math.min(20, this.currentQuestionIndex)}/20 | 時間: ${this.timeLeft}s`;
   },
 
   renderStage() {
@@ -118,8 +120,12 @@ const RacerGame = {
   },
 
   nextQuestion() {
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     document.getElementById('racer-question-text').textContent = this.currentQuestion.question;
@@ -179,7 +185,7 @@ const RacerGame = {
     // If all gates go off-screen and we haven't answered, force next question
     if (this.gates.length > 0 && this.gates[0].y > this.canvas.height) {
       // User missed the gates!
-      if (this.totalGates >= 10) {
+      if (this.currentQuestionIndex >= 20) {
         this.endGame();
       } else {
         this.nextQuestion();
@@ -215,7 +221,7 @@ const RacerGame = {
       }
 
       setTimeout(() => {
-        if (this.totalGates >= 10) {
+        if (this.currentQuestionIndex >= 20) {
           this.endGame();
         } else {
           this.nextQuestion();
@@ -244,7 +250,7 @@ const RacerGame = {
         this.endGame();
       } else {
         setTimeout(() => {
-          if (this.totalGates >= 10) {
+          if (this.currentQuestionIndex >= 20) {
             this.endGame();
           } else {
             this.nextQuestion();
@@ -371,7 +377,7 @@ const RacerGame = {
 
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">${this.lives <= 0 ? "💥 車體嚴重毀損！" : (this.totalGates >= 10 ? "🏁 恭喜抵達終點！" : "⏰ 時間到！競速結束")}</div>
+        <div class="win-title">${this.lives <= 0 ? "💥 車體嚴重毀損！" : (this.currentQuestionIndex >= 20 ? "🏁 恭喜抵達終點！" : "🏆 挑戰完成！")}</div>
         <p>你在極速賽車與學術道路上的表現極佳！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">成功通過閘門: ${this.correctCount} 次</p>

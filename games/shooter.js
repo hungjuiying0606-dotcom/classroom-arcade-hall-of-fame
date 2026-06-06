@@ -25,6 +25,8 @@ const ShooterGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.health = 10;
     this.timeLeft = 60;
     this.correctCount = 0;
@@ -50,7 +52,7 @@ const ShooterGame = {
     for (let i = 0; i < 10; i++) {
       shields += i < this.health ? "🛡️" : "💥";
     }
-    document.getElementById('game-timer').textContent = `護盾: ${shields} | 時間: ${this.timeLeft}s`;
+    document.getElementById('game-timer').textContent = `護盾: ${shields} | 進度: ${this.currentQuestionIndex}/20 | 時間: ${this.timeLeft}s`;
   },
 
   renderStage() {
@@ -139,8 +141,12 @@ const ShooterGame = {
   },
 
   nextQuestion() {
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     document.getElementById('shooter-question-text').textContent = this.currentQuestion.question;
@@ -361,7 +367,7 @@ const ShooterGame = {
 
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">${this.health <= 0 ? "💥 船體被毀！遊戲結束" : "⏰ 時間到！遊戲結束"}</div>
+        <div class="win-title">${this.health <= 0 ? "💥 船體被毀！遊戲結束" : "🏆 挑戰完成！"}</div>
         <p>你在太空防禦與答題任務中表現出色！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">擊中正確目標: ${this.correctCount} 次 / 發射子彈: ${this.totalShots} 發</p>

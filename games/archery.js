@@ -24,6 +24,8 @@ const ArcheryGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.timeLeft = 60;
     this.correctCount = 0;
     this.totalShots = 0;
@@ -43,7 +45,7 @@ const ArcheryGame = {
   },
 
   updateStatsUI() {
-    document.getElementById('game-timer').textContent = `時限: ${this.timeLeft}s`;
+    document.getElementById('game-timer').textContent = `進度: ${this.currentQuestionIndex}/20 | 時間: ${this.timeLeft}s`;
   },
 
   renderStage() {
@@ -126,8 +128,12 @@ const ArcheryGame = {
   },
 
   nextQuestion() {
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     document.getElementById('archery-question-text').textContent = this.currentQuestion.question;
@@ -400,7 +406,7 @@ const ArcheryGame = {
 
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">⏰ 時間到！挑戰結束</div>
+        <div class="win-title">🏆 挑戰完成！</div>
         <p>你在射箭打靶挑戰中展現了百步穿楊的箭法！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">命中正確靶心: ${this.correctCount} 次 / 總發射箭數: ${this.totalShots} 支</p>

@@ -22,6 +22,8 @@ const MinerGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.timeLeft = 60;
     this.correctCount = 0;
     this.totalLaunches = 0;
@@ -86,7 +88,7 @@ const MinerGame = {
     clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
-      document.getElementById('game-timer').textContent = `時限: ${this.timeLeft}s`;
+      document.getElementById('game-timer').textContent = `進度: ${this.currentQuestionIndex}/20 | 時間: ${this.timeLeft}s`;
       if (this.timeLeft <= 0) {
         this.endGame();
       }
@@ -94,8 +96,12 @@ const MinerGame = {
   },
 
   nextQuestion() {
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
     
     document.getElementById('miner-question-text').textContent = this.currentQuestion.question;

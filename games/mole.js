@@ -21,6 +21,8 @@ const MoleGame = {
   init() {
     this.container = document.getElementById('game-body');
     this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
     this.timeLeft = 60;
     this.correctCount = 0;
     this.totalWhacks = 0;
@@ -70,7 +72,7 @@ const MoleGame = {
     clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
-      document.getElementById('game-timer').textContent = `時限: ${this.timeLeft}s`;
+      document.getElementById('game-timer').textContent = `進度: ${this.currentQuestionIndex}/20 | 時間: ${this.timeLeft}s`;
       
       if (this.timeLeft <= 0) {
         this.endGame();
@@ -86,8 +88,12 @@ const MoleGame = {
 
   nextQuestion() {
     // Pick a random question
-    const qIndex = Math.floor(Math.random() * ArcadeState.questions.length);
-    const rawQuestion = ArcadeState.questions[qIndex];
+    if (this.currentQuestionIndex >= 20) {
+      this.endGame();
+      return;
+    }
+    const rawQuestion = this.sessionQuestions[this.currentQuestionIndex];
+    this.currentQuestionIndex++;
     
     // Convert simplified Q&A format to 4-choice format
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(rawQuestion);
@@ -280,7 +286,7 @@ const MoleGame = {
     
     this.container.innerHTML = `
       <div class="game-win-overlay">
-        <div class="win-title">⏰ 時間到！遊戲結束</div>
+        <div class="win-title">🏆 挑戰完成！</div>
         <p>你在打地鼠限時挑戰中取得了優異的成績！</p>
         <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">答對題數: ${this.correctCount} 題 / 總敲擊次數: ${this.totalWhacks} 次</p>

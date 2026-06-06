@@ -62,38 +62,38 @@ function doGet(e) {
         return corsResponse({ status: "success", data: [], message: "試算表中沒有題目資料（除標題列外無資料）" });
       }
       
-      // Auto-detect column headers (e.g. ignoring numbering column A if present)
+      // Auto-detect column headers
       const headers = data[0].map(h => h.toString().trim().toLowerCase());
       let colQuestion = -1;
       let colAnswer = -1;
+      let colOptions = [];
       let colExplanation = -1;
       
       for (let i = 0; i < headers.length; i++) {
         const h = headers[i];
         if (h.includes("題目") || h.includes("問題") || h.includes("question") || h.includes("題幹")) {
-          // Skip column 0 if there are multiple columns, as it is likely an ID/numbering column
-          if (i === 0 && headers.length > 2) {
-            continue;
-          }
           colQuestion = i;
-        } else if (h.includes("答案") || h.includes("answer") || h.includes("解答") || h.includes("正解") || h === "ans" || h === "key" || h === "correct" || h.includes("正確") || h.includes("標準")) {
-          // Skip column 0 if there are multiple columns, as it is likely an ID/numbering column
-          if (i === 0 && headers.length > 2) {
-            continue;
-          }
+        } else if (h.includes("正确答案") || h.includes("正確答案") || h.includes("答案") || h.includes("answer") || h.includes("解答") || h.includes("正解") || h === "ans" || h === "key" || h === "correct") {
           colAnswer = i;
+        } else if (h.includes("選項") || h.includes("option") || h.includes("choice") || h.includes("選一") || h.includes("選二") || h.includes("選三") || h.includes("選四")) {
+          colOptions.push(i);
         } else if (h.includes("解析") || h.includes("說明") || h.includes("explanation") || h.includes("詳解")) {
           colExplanation = i;
         }
       }
       
-      // Smart Fallback: if no headers match, detect based on columns
-      if (colQuestion === -1) {
-        // If first column has a blank header or is a number, assume Column B (1) is question
-        colQuestion = (headers[0] === "" || !isNaN(headers[0])) ? 1 : 0;
-      }
-      if (colAnswer === -1) {
-        colAnswer = colQuestion + 1 < headers.length ? colQuestion + 1 : colQuestion;
+      // Fallback: if no headers match, detect based on column count
+      if (colQuestion === -1 && headers.length >= 6) {
+        colQuestion = 0;
+        colOptions = [1, 2, 3, 4];
+        colAnswer = 5;
+      } else {
+        if (colQuestion === -1) {
+          colQuestion = (headers[0] === "" || !isNaN(headers[0])) ? 1 : 0;
+        }
+        if (colAnswer === -1) {
+          colAnswer = colQuestion + 1 < headers.length ? colQuestion + 1 : colQuestion;
+        }
       }
       
       const questions = [];
@@ -103,13 +103,31 @@ function doGet(e) {
         const aText = colAnswer < row.length ? row[colAnswer]?.toString().trim() : "";
         if (!qText || !aText) continue; // Skip empty rows
         
+        let opts = [];
+        if (colOptions.length > 0) {
+          colOptions.forEach(optCol => {
+            if (optCol < row.length) {
+              const optVal = row[optCol]?.toString().trim();
+              if (optVal !== "") {
+                opts.push(optVal);
+              }
+            }
+          });
+        }
+        
         const expText = (colExplanation !== -1 && colExplanation < row.length) ? row[colExplanation]?.toString().trim() : "";
         
-        questions.push({
+        const qObj = {
           question: qText,
           answer: aText,
           explanation: expText
-        });
+        };
+        
+        if (opts.length > 0) {
+          qObj.options = opts;
+        }
+        
+        questions.push(qObj);
       }
       
       return corsResponse({
