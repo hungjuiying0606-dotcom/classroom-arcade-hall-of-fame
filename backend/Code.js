@@ -16,23 +16,25 @@ function corsResponse(data) {
 
 // Open Spreadsheet (by configured ID, or active sheet, or fallback)
 function getSpreadsheet() {
-  const properties = PropertiesService.getScriptProperties();
-  let spreadsheetId = properties.getProperty("SPREADSHEET_ID") || DEFAULT_SPREADSHEET_ID;
-  
   let ss = null;
-  if (spreadsheetId) {
-    try {
-      ss = SpreadsheetApp.openById(spreadsheetId);
-    } catch(e) {
-      ss = null;
-    }
+  
+  // 1. First, try to get the active spreadsheet (for container-bound scripts)
+  try {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+  } catch(e) {
+    ss = null;
   }
   
+  // 2. If not container-bound, fallback to property SPREADSHEET_ID or DEFAULT_SPREADSHEET_ID
   if (!ss) {
-    try {
-      ss = SpreadsheetApp.getActiveSpreadsheet();
-    } catch(e) {
-      ss = null;
+    const properties = PropertiesService.getScriptProperties();
+    let spreadsheetId = properties.getProperty("SPREADSHEET_ID") || DEFAULT_SPREADSHEET_ID;
+    if (spreadsheetId) {
+      try {
+        ss = SpreadsheetApp.openById(spreadsheetId);
+      } catch(e) {
+        ss = null;
+      }
     }
   }
   
