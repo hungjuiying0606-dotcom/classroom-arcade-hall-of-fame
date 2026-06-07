@@ -53,42 +53,58 @@
     <!-- Lobby Content Grid -->
     <main class="grid-layout">
       
-      <!-- Student Info Panel (Left Sidebar) -->
-      <section class="panel glass-panel student-panel">
-        <h2 class="panel-title"><i data-lucide="user"></i> 玩家登錄</h2>
-        
-        <form id="student-form" class="student-form">
-          <div class="form-group">
-            <label for="student-class">班級</label>
-            <input type="text" id="student-class" placeholder="例如：701" required autocomplete="off">
-          </div>
+      <!-- Left Column Sidebar -->
+      <aside class="sidebar-column">
+        <!-- Student Info Panel (Left Sidebar) -->
+        <section class="panel glass-panel student-panel">
+          <h2 class="panel-title"><i data-lucide="user"></i> 玩家登錄</h2>
           
-          <div class="form-group">
-            <label for="student-seat">座號</label>
-            <input type="number" id="student-seat" min="1" max="100" placeholder="例如：5" required autocomplete="off">
-          </div>
+          <form id="student-form" class="student-form">
+            <div class="form-group">
+              <label for="student-class">班級</label>
+              <input type="text" id="student-class" placeholder="例如：701" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <label for="student-seat">座號</label>
+              <input type="number" id="student-seat" min="1" max="100" placeholder="例如：5" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <label for="student-name">姓名</label>
+              <input type="text" id="student-name" placeholder="例如：王小明" required autocomplete="off">
+            </div>
+            
+            <button type="submit" id="btn-login" class="btn btn-neon-green btn-full">
+              <i data-lucide="play-circle"></i> 確認玩家身份
+            </button>
+          </form>
           
+          <div id="student-badge" class="student-badge hidden">
+            <div class="badge-avatar">🕹️</div>
+            <div class="badge-info">
+              <p class="badge-title">當前玩家</p>
+              <p id="badge-display-name" class="badge-name">王小明 (701班 5號)</p>
+            </div>
+            <button id="btn-logout" class="btn btn-sm btn-outline-danger" title="更換玩家">
+              <i data-lucide="log-out"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Question Pool Selector Panel -->
+        <section class="panel glass-panel pool-panel" style="margin-top: 1.5rem;">
+          <h2 class="panel-title"><i data-lucide="database"></i> 選擇複習題庫</h2>
           <div class="form-group">
-            <label for="student-name">姓名</label>
-            <input type="text" id="student-name" placeholder="例如：王小明" required autocomplete="off">
+            <label for="question-pool-select">練習題庫</label>
+            <select id="question-pool-select" class="select-input">
+              <option value="default">趣味科學百科 (預設)</option>
+              <option value="review_02">世界名人堂 複習 02 (韋格納/華生/林媽利/張衡)</option>
+              <option value="review_03">世界名人堂 複習 03 (虎克/阿基米德/伽利略/居禮夫人)</option>
+            </select>
           </div>
-          
-          <button type="submit" id="btn-login" class="btn btn-neon-green btn-full">
-            <i data-lucide="play-circle"></i> 確認玩家身份
-          </button>
-        </form>
-        
-        <div id="student-badge" class="student-badge hidden">
-          <div class="badge-avatar">🕹️</div>
-          <div class="badge-info">
-            <p class="badge-title">當前玩家</p>
-            <p id="badge-display-name" class="badge-name">王小明 (701班 5號)</p>
-          </div>
-          <button id="btn-logout" class="btn btn-sm btn-outline-danger" title="更換玩家">
-            <i data-lucide="log-out"></i>
-          </button>
-        </div>
-      </section>
+        </section>
+      </aside>
 
       <!-- Game Selection Grid (Right Main Content) -->
       <section class="games-section">
