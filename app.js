@@ -1638,12 +1638,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
   studentForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    
+    const cls = document.getElementById('student-class').value.trim();
+    const seat = document.getElementById('student-seat').value.trim();
+    const name = document.getElementById('student-name').value.trim();
+    
+    if (!cls) {
+      alert('請填寫班級！');
+      document.getElementById('student-class').focus();
+      return;
+    }
+    if (!seat) {
+      alert('請填寫座號！');
+      document.getElementById('student-seat').focus();
+      return;
+    }
+    if (!name) {
+      alert('請填寫姓名！');
+      document.getElementById('student-name').focus();
+      return;
+    }
+    
     SoundFX.playCoin();
-    
-    const cls = document.getElementById('student-class').value;
-    const seat = document.getElementById('student-seat').value;
-    const name = document.getElementById('student-name').value;
-    
     ArcadeState.saveStudent(cls, seat, name);
     updateLoginUI();
   });
