@@ -1097,7 +1097,7 @@ const ArcadeState = {
     seat: localStorage.getItem('arcade_student_seat') || '',
     name: localStorage.getItem('arcade_student_name') || ''
   },
-  apiUrl: localStorage.getItem('arcade_api_url') || '',
+  apiUrl: localStorage.getItem('arcade_api_url') || 'https://script.google.com/macros/s/AKfycbwQTUHb4mxUA8pf3rFpKoIFn5NjME-EJyFFfBuJJGJvd0ihwzDKUStF3fi1dqNKuJL1kw/exec',
   currentPool: 'default',
   pools: {
     'default': DEMO_QUESTIONS,
@@ -1106,7 +1106,7 @@ const ArcadeState = {
   },
   cloudQuestions: null,
   questions: [...DEMO_QUESTIONS],
-  isDemoMode: true,
+  isDemoMode: false,
 
   setPool(poolKey) {
     this.currentPool = poolKey;
