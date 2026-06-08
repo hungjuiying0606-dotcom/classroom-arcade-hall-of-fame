@@ -36,7 +36,7 @@ const TreasureGame = {
     for (let i = 0; i < 3; i++) {
       hearts += i < this.health ? "❤️" : "🖤";
     }
-    document.getElementById('game-timer').textContent = `生命: ${hearts} | 進度: ${this.questionsAnswered}/20 題`;
+    document.getElementById('game-timer').textContent = `生命: ${hearts} | 進度: ${this.questionsAnswered}/10 題`;
   },
 
   generateMap() {
@@ -105,9 +105,9 @@ const TreasureGame = {
         }
 
         // Show contents if cleared path
-        if (cell.type === 'chest' && this.questionsAnswered < 20) {
+        if (cell.type === 'chest' && this.questionsAnswered < 10) {
       SoundFX.playFail();
-      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 20 題才能開啟它！請先去其他格子答題。`);
+      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 10 題才能開啟它！請先去其他格子答題。`);
       return;
     }
     if (cell.type === 'path') {
@@ -144,9 +144,9 @@ const TreasureGame = {
     }
 
     // If already clear path, move instantly
-    if (cell.type === 'chest' && this.questionsAnswered < 20) {
+    if (cell.type === 'chest' && this.questionsAnswered < 10) {
       SoundFX.playFail();
-      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 20 題才能開啟它！請先去其他格子答題。`);
+      alert(`🎁 這是終極寶箱！但是它被魔法鎖住了。\n您目前才回答了 ${this.questionsAnswered} 題，至少需要探索迷霧並回答 10 題才能開啟它！請先去其他格子答題。`);
       return;
     }
     if (cell.type === 'path') {

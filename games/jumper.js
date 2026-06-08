@@ -35,6 +35,8 @@ const JumperGame = {
     this.platforms = [];
     this.keys = {};
     this.scrollOffset = 0;
+    this.leftPressed = false;
+    this.rightPressed = false;
 
     document.getElementById('game-stage-title').textContent = "彈跳小英雄";
     document.getElementById('game-score').textContent = this.score;
@@ -62,7 +64,11 @@ const JumperGame = {
           <p style="font-size:0.75rem; color:var(--neon-gold); text-transform:uppercase; font-weight:700; margin:0 0 4px 0">彈跳任務：左右移動踩上「正確答案」的浮動平台！(← → 或 A/D 鍵移動)</p>
           <h3 id="jumper-question-text" style="font-size:1.1rem; line-height:1.3; margin:0; color:#fff">載入問題中...</h3>
         </div>
-        <canvas id="jumper-canvas" style="flex:1; width:100%; display:block;"></canvas>
+        <canvas id="jumper-canvas" style="flex:1; width:100%; display:block; touch-action:none;"></canvas>
+        <div class="jumper-touch-controls" style="position:absolute; bottom:20px; left:0; width:100%; display:flex; justify-content:space-between; padding:0 20px; box-sizing:border-box; z-index:10; pointer-events:none;">
+          <button id="jumper-btn-left" style="width:75px; height:75px; border-radius:50%; background:rgba(255, 176, 0, 0.25); border:2px solid var(--neon-gold); color:#fff; font-size:1.8rem; pointer-events:auto; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; outline:none; cursor:pointer; box-shadow:0 0 10px rgba(255,176,0,0.3); transition:background 0.1s ease;">◀</button>
+          <button id="jumper-btn-right" style="width:75px; height:75px; border-radius:50%; background:rgba(255, 176, 0, 0.25); border:2px solid var(--neon-gold); color:#fff; font-size:1.8rem; pointer-events:auto; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; outline:none; cursor:pointer; box-shadow:0 0 10px rgba(255,176,0,0.3); transition:background 0.1s ease;">▶</button>
+        </div>
       </div>
     `;
   },
@@ -91,6 +97,51 @@ const JumperGame = {
 
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
+
+    // Setup touch controls
+    const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const touchControls = this.container.querySelector('.jumper-touch-controls');
+    if (touchControls) {
+      touchControls.style.display = isTouch ? 'flex' : 'none';
+    }
+
+    const btnLeft = document.getElementById('jumper-btn-left');
+    const btnRight = document.getElementById('jumper-btn-right');
+
+    if (btnLeft && btnRight) {
+      this.touchHandlers = {
+        leftDown: (e) => {
+          e.preventDefault();
+          this.leftPressed = true;
+          btnLeft.style.background = 'rgba(255, 176, 0, 0.6)';
+        },
+        leftUp: (e) => {
+          e.preventDefault();
+          this.leftPressed = false;
+          btnLeft.style.background = 'rgba(255, 176, 0, 0.25)';
+        },
+        rightDown: (e) => {
+          e.preventDefault();
+          this.rightPressed = true;
+          btnRight.style.background = 'rgba(255, 176, 0, 0.6)';
+        },
+        rightUp: (e) => {
+          e.preventDefault();
+          this.rightPressed = false;
+          btnRight.style.background = 'rgba(255, 176, 0, 0.25)';
+        }
+      };
+
+      btnLeft.addEventListener('pointerdown', this.touchHandlers.leftDown);
+      btnLeft.addEventListener('pointerup', this.touchHandlers.leftUp);
+      btnLeft.addEventListener('pointercancel', this.touchHandlers.leftUp);
+      btnLeft.addEventListener('pointerleave', this.touchHandlers.leftUp);
+
+      btnRight.addEventListener('pointerdown', this.touchHandlers.rightDown);
+      btnRight.addEventListener('pointerup', this.touchHandlers.rightUp);
+      btnRight.addEventListener('pointercancel', this.touchHandlers.rightUp);
+      btnRight.addEventListener('pointerleave', this.touchHandlers.rightUp);
+    }
   },
 
   handleKeyDown: (e) => {
@@ -159,9 +210,9 @@ const JumperGame = {
 
   updatePhysics() {
     // Move left/right
-    if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
+    if (this.keys['ArrowLeft'] || this.keys['KeyA'] || this.leftPressed) {
       this.player.vx = -this.player.speed;
-    } else if (this.keys['ArrowRight'] || this.keys['KeyD']) {
+    } else if (this.keys['ArrowRight'] || this.keys['KeyD'] || this.rightPressed) {
       this.player.vx = this.player.speed;
     } else {
       this.player.vx = 0;
@@ -379,6 +430,23 @@ const JumperGame = {
     cancelAnimationFrame(this.animationId);
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
+
+    // Clean up touch handlers
+    const btnLeft = document.getElementById('jumper-btn-left');
+    const btnRight = document.getElementById('jumper-btn-right');
+    if (btnLeft && btnRight && this.touchHandlers) {
+      btnLeft.removeEventListener('pointerdown', this.touchHandlers.leftDown);
+      btnLeft.removeEventListener('pointerup', this.touchHandlers.leftUp);
+      btnLeft.removeEventListener('pointercancel', this.touchHandlers.leftUp);
+      btnLeft.removeEventListener('pointerleave', this.touchHandlers.leftUp);
+
+      btnRight.removeEventListener('pointerdown', this.touchHandlers.rightDown);
+      btnRight.removeEventListener('pointerup', this.touchHandlers.rightUp);
+      btnRight.removeEventListener('pointercancel', this.touchHandlers.rightUp);
+      btnRight.removeEventListener('pointerleave', this.touchHandlers.rightUp);
+    }
+    this.leftPressed = false;
+    this.rightPressed = false;
   }
 };
 

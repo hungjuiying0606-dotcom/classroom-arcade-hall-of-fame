@@ -48,7 +48,7 @@ const MinerGame = {
           <p style="font-size:0.75rem; color:var(--neon-gold); text-transform:uppercase; font-weight:700; margin:0 0 4px 0">採礦任務：點擊畫面發射鉤爪，抓取寫有「正確答案」的黃金！</p>
           <h3 id="miner-question-text" style="font-size:1.1rem; line-height:1.3; margin:0; color:#fff">載入問題中...</h3>
         </div>
-        <canvas id="miner-canvas" style="flex:1; width:100%; display:block; cursor:pointer;"></canvas>
+        <canvas id="miner-canvas" style="flex:1; width:100%; display:block; cursor:pointer; touch-action:none;"></canvas>
       </div>
     `;
   },
@@ -65,10 +65,11 @@ const MinerGame = {
     this.miner.angle = 0;
     this.miner.state = 'swinging';
 
-    this.canvas.addEventListener('click', this.handleCanvasClick);
+    this.canvas.addEventListener('pointerdown', this.handleCanvasClick);
   },
 
   handleCanvasClick: (e) => {
+    e.preventDefault();
     if (MinerGame.miner.state !== 'swinging') return;
     MinerGame.launchHook();
   },
@@ -403,7 +404,7 @@ const MinerGame = {
     clearInterval(this.timerInterval);
     cancelAnimationFrame(this.animationId);
     if (this.canvas) {
-      this.canvas.removeEventListener('click', this.handleCanvasClick);
+      this.canvas.removeEventListener('pointerdown', this.handleCanvasClick);
     }
   }
 };
