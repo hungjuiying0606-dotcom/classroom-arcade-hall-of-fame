@@ -1097,7 +1097,7 @@ const ArcadeState = {
     seat: localStorage.getItem('arcade_student_seat') || '',
     name: localStorage.getItem('arcade_student_name') || ''
   },
-  apiUrl: localStorage.getItem('arcade_api_url') || 'https://script.google.com/macros/s/AKfycbwQTUHb4mxUA8pf3rFpKoIFn5NjME-EJyFFfBuJJGJvd0ihwzDKUStF3fi1dqNKuJL1kw/exec',
+  apiUrl: localStorage.getItem('arcade_api_url') || 'https://script.google.com/macros/s/AKfycbxU4YP9zs6dq15vugQbJBA1BKX2_NQDaW77YAwOf8dlbnd0oVF2S4uaR2xbTNYdp8LMqQ/exec',
   currentPool: 'default',
   pools: {
     'default': DEMO_QUESTIONS,
