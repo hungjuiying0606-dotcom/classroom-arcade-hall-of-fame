@@ -70,6 +70,7 @@ function doGet(e) {
       let colAnswer = -1;
       let colOptions = [];
       let colExplanation = -1;
+      let colRange = -1;
       
       for (let i = 0; i < headers.length; i++) {
         const h = headers[i];
@@ -81,6 +82,8 @@ function doGet(e) {
           colOptions.push(i);
         } else if (h.includes("解析") || h.includes("說明") || h.includes("explanation") || h.includes("詳解")) {
           colExplanation = i;
+        } else if (h.includes("範圍") || h.includes("單元") || h.includes("range") || h.includes("章節") || h.includes("分類") || h.includes("topic") || h.includes("category")) {
+          colRange = i;
         }
       }
       
@@ -118,11 +121,13 @@ function doGet(e) {
         }
         
         const expText = (colExplanation !== -1 && colExplanation < row.length) ? row[colExplanation]?.toString().trim() : "";
+        const rangeText = (colRange !== -1 && colRange < row.length) ? row[colRange]?.toString().trim() : "";
         
         const qObj = {
           question: qText,
           answer: aText,
-          explanation: expText
+          explanation: expText,
+          range: rangeText
         };
         
         if (opts.length > 0) {

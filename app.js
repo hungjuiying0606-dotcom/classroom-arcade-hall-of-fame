@@ -1110,7 +1110,11 @@ const ArcadeState = {
 
   setPool(poolKey) {
     this.currentPool = poolKey;
-    if (poolKey === 'cloud') {
+    if (poolKey && poolKey.startsWith('cloud:')) {
+      const range = poolKey.slice(6);
+      const all = this.cloudQuestions || [];
+      this.questions = range ? all.filter(q => q.range === range) : all;
+    } else if (poolKey === 'cloud') {
       this.questions = this.cloudQuestions || [];
     } else {
       if (this.pools[poolKey]) {
@@ -1275,26 +1279,55 @@ function updatePoolSelectUI() {
   const poolSelect = document.getElementById('question-pool-select');
   if (!poolSelect) return;
   
-  let cloudOption = poolSelect.querySelector('option[value="cloud"]');
+  // Remove old cloud options (value starting with "cloud")
+  const oldCloud = poolSelect.querySelectorAll('option[value^="cloud"]');
+  oldCloud.forEach(o => o.remove());
   
   if (ArcadeState.cloudQuestions && ArcadeState.cloudQuestions.length > 0) {
-    if (!cloudOption) {
-      cloudOption = document.createElement('option');
-      cloudOption.value = 'cloud';
-      cloudOption.textContent = `雲端試算表題庫 (Apps Script - 共 ${ArcadeState.cloudQuestions.length} 題)`;
-      poolSelect.appendChild(cloudOption);
-    } else {
-      cloudOption.textContent = `雲端試算表題庫 (Apps Script - 共 ${ArcadeState.cloudQuestions.length} 題)`;
-    }
-  } else {
-    if (cloudOption) {
-      cloudOption.remove();
-      if (poolSelect.value === 'cloud') {
-        poolSelect.value = 'default';
-        ArcadeState.setPool('default');
-        localStorage.setItem('arcade_selected_pool', 'default');
+    // Find unique ranges
+    const rangeSet = new Set();
+    ArcadeState.cloudQuestions.forEach(q => { if (q.range) rangeSet.add(q.range); });
+    const ranges = [...rangeSet].sort();
+    
+    // Determine current cloud sub-pool from localStorage
+    const saved = localStorage.getItem('arcade_cloud_range') || '';
+    
+    if (ranges.length > 0) {
+      // Create an option per range
+      ranges.forEach(r => {
+        const count = ArcadeState.cloudQuestions.filter(q => q.range === r).length;
+        const opt = document.createElement('option');
+        opt.value = 'cloud:' + r;
+        opt.textContent = `雲端 - ${r} (${count} 題)`;
+        poolSelect.appendChild(opt);
+      });
+      // Also keep a "全部" option
+      const allOpt = document.createElement('option');
+      allOpt.value = 'cloud';
+      allOpt.textContent = `雲端 - 全部題庫 (${ArcadeState.cloudQuestions.length} 題)`;
+      poolSelect.appendChild(allOpt);
+      
+      // Auto-select saved range or first range
+      const target = saved ? 'cloud:' + saved : ('cloud:' + ranges[0]);
+      if (poolSelect.querySelector(`option[value="${target}"]`)) {
+        poolSelect.value = target;
+        ArcadeState.setPool(target);
+        localStorage.setItem('arcade_selected_pool', target);
       }
+    } else {
+      // No range column — single cloud option
+      const opt = document.createElement('option');
+      opt.value = 'cloud';
+      opt.textContent = `雲端試算表題庫 (${ArcadeState.cloudQuestions.length} 題)`;
+      poolSelect.appendChild(opt);
     }
+  }
+  
+  // If poolSelect value was removed, fall back
+  if (!poolSelect.value || !poolSelect.querySelector(`option[value="${poolSelect.value}"]`)) {
+    poolSelect.value = 'default';
+    ArcadeState.setPool('default');
+    localStorage.setItem('arcade_selected_pool', 'default');
   }
 }
 
@@ -1317,17 +1350,9 @@ const GAS_API = {
         ArcadeState.cloudQuestions = json.data.length > 0 ? json.data : null;
         updatePoolSelectUI();
         
-        // Auto select cloud pool
-        const poolSelect = document.getElementById('question-pool-select');
-        if (poolSelect) {
-          poolSelect.value = 'cloud';
-          ArcadeState.setPool('cloud');
-          localStorage.setItem('arcade_selected_pool', 'cloud');
-        }
-        
         return { 
           success: true, 
-          message: `連線成功！共讀取到 ${json.data.length} 題庫。`
+          message: `連線成功！共讀取到 ${json.data.length} 題。`
         };
       } else {
         return { success: false, message: "伺服器回傳錯誤：" + json.message };
@@ -1347,13 +1372,6 @@ const GAS_API = {
       if (json.status === 'success' && json.data.length > 0) {
         ArcadeState.cloudQuestions = json.data;
         updatePoolSelectUI();
-        
-        const savedPool = localStorage.getItem('arcade_selected_pool') || 'default';
-        if (savedPool === 'cloud') {
-          const poolSelect = document.getElementById('question-pool-select');
-          if (poolSelect) poolSelect.value = 'cloud';
-          ArcadeState.setPool('cloud');
-        }
       }
     } catch (e) {
       console.warn("Failed silent fetch of questions, using cached.", e);
@@ -1580,6 +1598,9 @@ window.addEventListener('DOMContentLoaded', () => {
       const selectedPool = e.target.value;
       ArcadeState.setPool(selectedPool);
       localStorage.setItem('arcade_selected_pool', selectedPool);
+      if (selectedPool && selectedPool.startsWith('cloud:')) {
+        localStorage.setItem('arcade_cloud_range', selectedPool.slice(6));
+      }
     });
   }
 
