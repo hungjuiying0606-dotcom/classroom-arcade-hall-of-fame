@@ -1787,6 +1787,24 @@ window.addEventListener('DOMContentLoaded', () => {
         gameEngine = LavaGame;
       } else if (gameType === 'pancake') {
         gameEngine = PancakeGame;
+      } else if (gameType === 'catch') {
+        gameEngine = CatchGame;
+      } else if (gameType === 'dodge') {
+        gameEngine = DodgeGame;
+      } else if (gameType === 'stack') {
+        gameEngine = StackGame;
+      } else if (gameType === 'spin') {
+        gameEngine = SpinGame;
+      } else if (gameType === 'paint') {
+        gameEngine = PaintGame;
+      } else if (gameType === 'tower') {
+        gameEngine = TowerGame;
+      } else if (gameType === 'snake') {
+        gameEngine = SnakeGame;
+      } else if (gameType === 'pong') {
+        gameEngine = PongGame;
+      } else if (gameType === 'quizrace') {
+        gameEngine = QuizRaceGame;
       }
       
       if (gameEngine) {

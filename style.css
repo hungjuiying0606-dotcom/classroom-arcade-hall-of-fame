@@ -253,6 +253,16 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 
+.btn-neon-purple {
+  background: var(--neon-purple);
+  color: #fff;
+  box-shadow: 0 0 15px var(--neon-purple-glow);
+}
+.btn-neon-purple:hover {
+  box-shadow: 0 0 25px var(--neon-purple);
+  transform: translateY(-2px);
+}
+
 .btn-outline-danger {
   background: transparent;
   color: var(--neon-pink);
@@ -1787,6 +1797,51 @@ h1, h2, h3, h4, h5, h6 {
 .card-arena {
   --card-accent: var(--neon-gold);
   --card-shadow: var(--neon-gold-glow);
+}
+
+.card-catch {
+  --card-accent: var(--neon-blue);
+  --card-shadow: var(--neon-blue-glow);
+}
+
+.card-dodge {
+  --card-accent: var(--neon-green);
+  --card-shadow: var(--neon-green-glow);
+}
+
+.card-stack {
+  --card-accent: var(--neon-gold);
+  --card-shadow: var(--neon-gold-glow);
+}
+
+.card-spin {
+  --card-accent: var(--neon-purple);
+  --card-shadow: var(--neon-purple-glow);
+}
+
+.card-paint {
+  --card-accent: var(--neon-pink);
+  --card-shadow: var(--neon-pink-glow);
+}
+
+.card-tower {
+  --card-accent: var(--neon-gold);
+  --card-shadow: var(--neon-gold-glow);
+}
+
+.card-snake {
+  --card-accent: var(--neon-green);
+  --card-shadow: var(--neon-green-glow);
+}
+
+.card-pong {
+  --card-accent: var(--neon-blue);
+  --card-shadow: var(--neon-blue-glow);
+}
+
+.card-quizrace {
+  --card-accent: var(--neon-purple);
+  --card-shadow: var(--neon-purple-glow);
 }
 
 
