@@ -1777,6 +1777,16 @@ window.addEventListener('DOMContentLoaded', () => {
         gameEngine = MinerGame;
       } else if (gameType === 'arena') {
         gameEngine = ArenaGame;
+      } else if (gameType === 'buzzer') {
+        gameEngine = BuzzerGame;
+      } else if (gameType === 'fisher') {
+        gameEngine = FisherGame;
+      } else if (gameType === 'slots') {
+        gameEngine = SlotsGame;
+      } else if (gameType === 'lava') {
+        gameEngine = LavaGame;
+      } else if (gameType === 'pancake') {
+        gameEngine = PancakeGame;
       }
       
       if (gameEngine) {

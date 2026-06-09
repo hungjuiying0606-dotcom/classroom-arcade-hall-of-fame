@@ -1,0 +1,186 @@
+Please create 3 complete JavaScript game module files in the current directory:
+1. slots.js
+2. lava.js  
+3. pancake.js
+
+IMPORTANT: You MUST actually CREATE all 3 files. Do not just output content to the console.
+
+All games share these PLATFORM APIs (globally available, do NOT redefine):
+- ArcadeState.getRandomQuestions(20) -> array of raw question objects
+- ArcadeState.getMultipleChoiceQuestion(rawQ) -> { question: string, options: string[], answer: number (index), explanation: string }
+- SoundFX.playSuccess(), SoundFX.playFail(), SoundFX.playCoin(), SoundFX.playClick(), SoundFX.playWin()
+- GAS_API.logScore(gameName, score, correct, total) -> async function
+
+DOM IDs in the page:
+- 'game-body' -> inject HTML here
+- 'game-stage-title' -> game title
+- 'game-score' -> score display
+- 'game-timer' -> timer/progress
+
+All games MUST use pointerdown (NOT click/mousedown) for tablet support.
+All interactive elements need: touch-action: none; style.
+
+===== FILE 1: slots.js =====
+
+Game: Slot Machine Answer Game (SlotsGame)
+
+const SlotsGame = {
+  container: null,
+  score: 0,
+  timeLeft: 90,
+  timerInterval: null,
+  currentQuestion: null,
+  correctCount: 0,
+  totalSpins: 0,
+  sessionQuestions: [],
+  currentQuestionIndex: 0,
+  reels: [null, null, null],
+  reelIntervals: [null, null, null],
+  spinning: false,
+
+  init() { ... },
+  destroy() { clearInterval(this.timerInterval); this.reelIntervals.forEach(r => clearInterval(r)); },
+};
+window.SlotsGame = SlotsGame;
+
+MECHANICS:
+- Show question text above slot machine
+- Slot machine has 3 reels (columns), each reel cycles through all 4 answer options rapidly (spinning animation)
+- Player sees reels spinning with answer text cycling fast
+- A "STOP" button (large, red, centered) - when pressed, stops all reels simultaneously showing one answer each
+- The stopped combination shows ONE answer on each reel (so 3 columns each show one of the 4 answers)
+- If the answer on reel 2 (middle) matches the correct answer: WIN! +150 pts
+- If reels 1 and 3 also match the correct answer (all 3 same and correct): JACKPOT +500 pts
+- Wrong answer shown: -50 pts
+- Then next question, reels start spinning again
+- Show spinning by cycling text every 80ms using setInterval
+- Visual: 3 columns in a row, each has a border, showing one text at a time, cycling rapidly when spinning
+- STOP button changes to green "SPIN" to start next question after result shown
+
+LAYOUT inject into game-body:
+<div style="padding:16px; text-align:center;">
+  <h3 id="slots-question" style="font-size:1.2rem; color:var(--text-main); margin-bottom:20px; min-height:60px;"></h3>
+  <div style="display:flex; justify-content:center; gap:12px; margin-bottom:20px;">
+    <div id="reel-0" style="width:120px; height:80px; border:3px solid var(--neon-gold); border-radius:8px; background:#1a1a2e; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#fff; overflow:hidden; padding:4px;"></div>
+    <div id="reel-1" style="width:120px; height:80px; border:3px solid var(--neon-pink); border-radius:8px; background:#1a1a2e; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#fff; overflow:hidden; padding:4px;"></div>
+    <div id="reel-2" style="width:120px; height:80px; border:3px solid var(--neon-blue); border-radius:8px; background:#1a1a2e; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#fff; overflow:hidden; padding:4px;"></div>
+  </div>
+  <div id="slots-result" style="height:40px; font-size:1.1rem; font-weight:700; margin-bottom:12px;"></div>
+  <button id="slots-btn" class="btn btn-neon-pink" style="min-width:200px; min-height:64px; font-size:1.2rem; touch-action:none;">STOP</button>
+  <p id="slots-progress" style="margin-top:12px; color:var(--text-muted);">Q 0/20</p>
+</div>
+
+===== FILE 2: lava.js =====
+
+Game: Volcano Lava Escape (LavaGame)
+
+const LavaGame = {
+  container: null,
+  score: 0,
+  timeLeft: 90,
+  timerInterval: null,
+  animationId: null,
+  currentQuestion: null,
+  correctCount: 0,
+  totalAttempts: 0,
+  sessionQuestions: [],
+  currentQuestionIndex: 0,
+  playerY: 0,
+  lavaY: 0,
+  platforms: [],
+  gameOver: false,
+
+  init() { ... },
+  destroy() { clearInterval(this.timerInterval); cancelAnimationFrame(this.animationId); },
+};
+window.LavaGame = LavaGame;
+
+MECHANICS:
+- Canvas-based game, canvas height 480px
+- Player character (simple circle or emoji) starts at bottom platform
+- Lava rises slowly from bottom
+- 3-4 horizontal platforms at various heights, each showing one answer option text
+- Player is ON one platform, must jump to a platform above to escape lava
+- Question shown at top of canvas
+- Player clicks/taps a platform above them to jump to it
+- If it's the correct answer: jump succeeds, +100 pts, next question, generate new platform higher up, lava rises faster
+- If wrong answer: jump fails, character falls to current platform or lava, -40 pts
+- If lava reaches player: game over
+- Generate platforms procedurally, always 1 correct + 2-3 wrong per visible screen
+- Use pointerdown on canvas
+- Player drawn as simple figure at 40x40 pixels
+- Smooth lava animation (wobbling top edge)
+- Platforms are rectangles with rounded corners, labeled with answer text
+
+LAYOUT:
+<div style="position:relative; width:100%; background:#1a0a00; border-radius:12px; overflow:hidden; border:2px solid #ff4500;">
+  <div style="padding:8px; background:rgba(255,69,0,0.1); text-align:center; border-bottom:1px solid rgba(255,69,0,0.3);">
+    <p style="font-size:0.7rem; color:#ff6b35; margin:0 0 4px; text-transform:uppercase; font-weight:700;">Tap the correct answer platform to climb!</p>
+    <h3 id="lava-question-text" style="font-size:1rem; color:#fff; margin:0;"></h3>
+  </div>
+  <canvas id="lava-canvas" style="width:100%; display:block; cursor:pointer; touch-action:none; height:460px;"></canvas>
+</div>
+
+===== FILE 3: pancake.js =====
+
+Game: Pancake Stack Quiz (PancakeGame)
+
+const PancakeGame = {
+  container: null,
+  score: 0,
+  timeLeft: 90,
+  timerInterval: null,
+  currentQuestion: null,
+  correctCount: 0,
+  totalAnswers: 0,
+  sessionQuestions: [],
+  currentQuestionIndex: 0,
+  stackHeight: 0,
+  maxStack: 10,
+
+  init() { ... },
+  destroy() { clearInterval(this.timerInterval); },
+};
+window.PancakeGame = PancakeGame;
+
+MECHANICS:
+- Show question above, show 4 answer buttons below
+- Above the buttons, show a VISUAL pancake stack using div elements
+- Each correctly answered question adds a pancake (colored circle/ellipse div) to the stack
+- Wrong answer: stack shakes/wobbles animation and one pancake falls off (CSS animation)
+- Stack is drawn vertically, pancakes stacked bottom to top, each pancake is a different warm color
+- Target: stack 10 pancakes to win! (or answer 20 questions)
+- +100 per correct, -20 per wrong, +500 bonus for completing 10-stack
+- Show stack counter: X/10
+- Pancake visual: div with border-radius:50%, width varies (bottom wider, top narrower), height:20px
+- Colors: warm browns and golds (#8B4513, #D2691E, #DAA520, #F4A460, #DEB887)
+- When wrong: CSS keyframe animation shakeX on the stack div for 0.5s
+
+LAYOUT inject into game-body:
+<div style="padding:16px; display:flex; flex-direction:column; align-items:center; height:100%; box-sizing:border-box;">
+  <h3 id="pancake-question" style="font-size:1.1rem; color:var(--text-main); text-align:center; margin-bottom:8px; min-height:60px; width:100%;"></h3>
+  <p id="pancake-progress" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:4px;">Stack: 0/10</p>
+  <div id="pancake-stack-container" style="width:200px; height:200px; display:flex; flex-direction:column-reverse; justify-content:flex-start; align-items:center; margin-bottom:16px; position:relative;">
+    <!-- pancakes injected here -->
+  </div>
+  <div id="pancake-options" style="width:100%; display:flex; flex-direction:column; gap:8px;"></div>
+</div>
+
+Answer buttons: 80px tall, full width, bright colors, pointerdown events.
+
+END GAME for all 3 games (inject into game-body):
+<div class="game-win-overlay">
+  <div class="win-title">[game-specific title]</div>
+  <div class="win-score">SCORE: {score}</div>
+  <p style="color:var(--text-muted)">Correct: {correct} / {total}</p>
+  <button id="btn-win-exit" class="btn btn-neon-gold" style="padding:0.75rem 2rem;">Exit and Save Score</button>
+</div>
+
+Exit button for each game must call the appropriate GAS_API.logScore and then show lobby.
+- slots.js: GAS_API.logScore("slot machine quiz", score, correctCount, totalSpins)
+- lava.js: GAS_API.logScore("lava escape quiz", score, correctCount, totalAttempts)
+- pancake.js: GAS_API.logScore("pancake stack quiz", score, correctCount, totalAnswers)
+
+Then: document.getElementById('game-stage').classList.add('hidden'); document.getElementById('arcade-lobby').classList.remove('hidden'); ArcadeState.currentGame = null;
+
+Create all 3 files now. Each file must be complete, self-contained, and fully functional.

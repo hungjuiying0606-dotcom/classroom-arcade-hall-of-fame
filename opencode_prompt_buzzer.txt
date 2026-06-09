@@ -1,0 +1,98 @@
+Please create a complete JavaScript game module file and save it as buzzer.js in the current directory.
+
+IMPORTANT: You MUST actually CREATE the file buzzer.js. Do not just output content to the console.
+
+Game Name: BuzzerGame (quick answer buzzer game for classroom quiz)
+File to create: buzzer.js
+
+This is a classroom quiz game module for the Classroom Arcade platform.
+
+REQUIRED MODULE STRUCTURE (must follow exactly):
+const BuzzerGame = {
+  container: null,
+  score: 0,
+  timeLeft: 60,
+  timerInterval: null,
+  currentQuestion: null,
+  correctCount: 0,
+  totalAnswers: 0,
+  sessionQuestions: [],
+  currentQuestionIndex: 0,
+  combo: 0,
+  questionStartTime: 0,
+
+  init() {
+    this.container = document.getElementById('game-body');
+    this.score = 0;
+    this.sessionQuestions = ArcadeState.getRandomQuestions(20);
+    this.currentQuestionIndex = 0;
+    this.timeLeft = 60;
+    this.correctCount = 0;
+    this.totalAnswers = 0;
+    this.combo = 0;
+    document.getElementById('game-stage-title').textContent = "quick answer buzzer";
+    document.getElementById('game-score').textContent = this.score;
+    document.getElementById('game-timer').textContent = "60s";
+    this.renderLayout();
+    this.startTimer();
+    this.nextQuestion();
+  },
+
+  destroy() { clearInterval(this.timerInterval); },
+
+  // ... all other methods
+};
+window.BuzzerGame = BuzzerGame;
+
+PLATFORM APIs (globally available, do NOT redefine):
+- ArcadeState.getRandomQuestions(20) -> array of raw question objects
+- ArcadeState.getMultipleChoiceQuestion(rawQ) -> returns { question: string, options: string[], answer: number, explanation: string }
+- SoundFX.playSuccess(), SoundFX.playFail(), SoundFX.playCoin(), SoundFX.playClick(), SoundFX.playWin()
+- GAS_API.logScore(gameName, score, correct, total) -> async function
+
+DOM IDs that exist in the page (do NOT recreate them):
+- 'game-body' -> inject your game HTML here
+- 'game-stage-title' -> set to game name
+- 'game-score' -> current score display
+- 'game-timer' -> timer/progress display
+
+GAME MECHANICS:
+1. Show a question at the top in large text (font-size: 1.3rem)
+2. Show 4 large answer buttons (min-height: 80px each, full width, font-size: 1.1rem)
+3. Use pointerdown (NOT click) events for tablet support
+4. Add touch-action: none to interactive elements
+5. Score: base 100 points + speed bonus (up to 100 extra if answered under 2 seconds)
+6. Combo system: consecutive correct answers give multiplier (x1, x1.5, x2, x3)
+7. Wrong answer: -30 points, highlight correct answer in green for 1 second
+8. Progress: 20 questions total, show X/20 in timer element
+9. 60 second total timer
+
+BUTTON STYLING (use inline styles for colors):
+- Button A: background: linear-gradient(135deg, #e91e8c, #ff6b6b)
+- Button B: background: linear-gradient(135deg, #1e90ff, #00d4ff)  
+- Button C: background: linear-gradient(135deg, #00c853, #69f0ae)
+- Button D: background: linear-gradient(135deg, #ff6f00, #ffd740)
+- All buttons: color white, border-radius 12px, margin-bottom 8px, cursor pointer
+
+LAYOUT (inject into game-body):
+<div style="padding: 16px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
+  <div id="buzzer-question" style="font-size: 1.3rem; font-weight: 700; color: var(--text-main); text-align: center; margin-bottom: 16px; line-height: 1.4; min-height: 80px;">Question here</div>
+  <div id="buzzer-combo" style="text-align: center; font-size: 0.9rem; color: var(--neon-gold); margin-bottom: 8px;">Combo x1</div>
+  <div id="buzzer-options" style="display: flex; flex-direction: column; flex: 1; gap: 8px;"></div>
+</div>
+
+END GAME - inject this into game-body when done:
+<div class="game-win-overlay">
+  <div class="win-title">Buzzer Game Over!</div>
+  <div class="win-score">SCORE: {score}</div>
+  <p style="color:var(--text-muted)">Correct: {correct} / {total}</p>
+  <button id="btn-win-exit" class="btn btn-neon-gold" style="padding:0.75rem 2rem;">Exit and Save Score</button>
+</div>
+
+The exit button onclick must call:
+  await GAS_API.logScore("quick answer buzzer", finalScore, this.correctCount, this.totalAnswers);
+  document.getElementById('game-stage').classList.add('hidden');
+  document.getElementById('arcade-lobby').classList.remove('hidden');
+  ArcadeState.currentGame = null;
+
+Write the complete JavaScript as buzzer.js. The file must be complete, functional, and ready to use.
