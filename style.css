@@ -1844,4 +1844,19 @@ h1, h2, h3, h4, h5, h6 {
   --card-shadow: var(--neon-purple-glow);
 }
 
+.card-bingo {
+  --card-accent: var(--neon-gold);
+  --card-shadow: var(--neon-gold-glow);
+}
+
+.card-block {
+  --card-accent: var(--neon-purple);
+  --card-shadow: var(--neon-purple-glow);
+}
+
+.card-target {
+  --card-accent: var(--neon-green);
+  --card-shadow: var(--neon-green-glow);
+}
+
 

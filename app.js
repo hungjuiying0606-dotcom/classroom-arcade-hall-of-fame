@@ -1805,6 +1805,12 @@ window.addEventListener('DOMContentLoaded', () => {
         gameEngine = PongGame;
       } else if (gameType === 'quizrace') {
         gameEngine = QuizRaceGame;
+      } else if (gameType === 'bingo') {
+        gameEngine = BingoGame;
+      } else if (gameType === 'block') {
+        gameEngine = BlockGame;
+      } else if (gameType === 'target') {
+        gameEngine = TargetGame;
       }
       
       if (gameEngine) {
