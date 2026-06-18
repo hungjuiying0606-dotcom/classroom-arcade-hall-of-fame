@@ -76,7 +76,7 @@ const BingoGame = {
     QuestionModal.show(cellData.q, 15, (isCorrect) => {
       this.totalAnswered++;
       if (isCorrect) {
-        this.score += 80; this.correctCount++; SoundFX.playSuccess();
+        this.score += 100; this.correctCount++; SoundFX.playSuccess();
         this.marked[r][c] = true;
         this.checkBingo();
       } else {
@@ -97,7 +97,7 @@ const BingoGame = {
     }
     if (this.marked.map((r, i) => r[i]).every(c => c)) newBingo = true;
     if (this.marked.map((r, i) => r[this.size - 1 - i]).every(c => c)) newBingo = true;
-    if (newBingo) { this.bingoCount++; this.score += 200; SoundFX.playCoin(); }
+    if (newBingo) { this.bingoCount++; SoundFX.playCoin(); }
     document.getElementById('bingo-count').textContent = `BINGO: ${this.bingoCount} 條線`;
   },
 

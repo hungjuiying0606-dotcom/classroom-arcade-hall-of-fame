@@ -184,11 +184,11 @@ const MonopolyGame = {
         // Pass Start
         if (this.position === 0) {
           this.laps++;
-          this.score += 200;
+          this.score += 100;
           document.getElementById('game-score').textContent = this.score;
           document.getElementById('game-timer').textContent = `Laps: ${this.laps} / ${this.maxLaps}`;
           SoundFX.playCoin();
-          info.textContent = "通過起點！獲得 200 分！";
+          info.textContent = "通過起點！獲得 100 分！";
         } else {
           SoundFX.playClick();
         }
@@ -228,11 +228,11 @@ const MonopolyGame = {
       QuestionModal.show(mcQuestion, 25, (isCorrect) => {
         if (isCorrect) {
           this.questionsCorrect++;
-          this.score += 200;
-          info.textContent = "回答正確！獲得 200 分！";
+          this.score += 100;
+          info.textContent = "回答正確！獲得 100 分！";
         } else {
-          this.score = Math.max(0, this.score - 100);
-          info.textContent = "回答錯誤！扣除 100 分。";
+          this.score = Math.max(0, this.score - 20);
+          info.textContent = "回答錯誤！扣除 20 分。";
         }
         document.getElementById('game-score').textContent = this.score;
         this.isMoving = false;
@@ -286,7 +286,7 @@ const MonopolyGame = {
       
       setTimeout(() => {
         this.position = 5; // Teleport to jail
-        this.score = Math.max(0, this.score - 150);
+        this.score = Math.max(0, this.score - 50);
         document.getElementById('game-score').textContent = this.score;
         this.updateTokenPosition();
         
@@ -298,9 +298,9 @@ const MonopolyGame = {
     }
     
     else if (cell.type === "free-parking") {
-      info.textContent = "🚗 來到休息站！免費獲得 150 分！";
+      info.textContent = "🚗 來到休息站！免費獲得 50 分！";
       SoundFX.playCoin();
-      this.score += 150;
+      this.score += 50;
       document.getElementById('game-score').textContent = this.score;
       
       setTimeout(() => {

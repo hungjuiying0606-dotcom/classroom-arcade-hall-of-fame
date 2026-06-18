@@ -197,23 +197,16 @@ const MatchGame = {
   },
 
   async endGame(isWin) {
-    let finalScore = this.score;
-    let timeBonus = 0;
     
     if (isWin) {
       SoundFX.playWin();
-      timeBonus = this.timeLeft * 10;
-      finalScore += timeBonus;
     }
     
     this.container.innerHTML = `
       <div class="game-win-overlay">
         <div class="win-title">${isWin ? "🎉 挑戰成功！" : "⏰ 時間到！"}</div>
         <p>${isWin ? `你用最快的速度消滅了所有卡牌！` : "別灰心，下次再試試看吧！"}</p>
-        <div class="win-score">SCORE: ${finalScore}</div>
-        <div style="font-size:0.9rem; margin-top:-0.5rem; color:var(--text-muted)">
-          ${isWin ? `配對得分: ${this.score} + 時間加成: ${timeBonus} (${this.timeLeft}s x 10)` : `配對得分: ${this.score}`}
-        </div>
+        <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">配對成功: ${this.matchedPairs} 對 / 錯誤嘗試: ${this.wrongCount} 次</p>
         <button id="btn-win-exit" class="btn btn-neon-green">退出並登錄成績</button>
       </div>

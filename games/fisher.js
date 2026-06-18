@@ -216,7 +216,7 @@ const FisherGame = {
 
   handleCatch(f) {
     if (f.isCorrect) {
-      this.score += 120;
+      this.score += 100;
       this.correctCount++;
       SoundFX.playCoin();
       document.getElementById('game-score').textContent = this.score;
@@ -226,7 +226,7 @@ const FisherGame = {
       }
       setTimeout(() => this.nextQuestion(), 700);
     } else {
-      this.score = Math.max(0, this.score - 30);
+      this.score = Math.max(0, this.score - 20);
       SoundFX.playFail();
       document.getElementById('game-score').textContent = this.score;
       this.spawnFish();

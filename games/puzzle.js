@@ -167,7 +167,7 @@ const PuzzleGame = {
 
     } else {
       SoundFX.playFail();
-      this.score = Math.max(0, this.score - 30);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
 
       // Flash red feedback
@@ -257,17 +257,11 @@ const PuzzleGame = {
     this.destroy();
     SoundFX.playWin();
 
-    const bonus = isWin ? this.timeLeft * 5 : 0;
-    const finalScore = this.score + bonus;
-
     this.container.innerHTML = `
       <div class="game-win-overlay">
         <div class="win-title">${isWin ? "🎉 恭喜拼圖完成！" : "⏰ 時間到！"}</div>
         <p>${isWin ? "你完美拼出了神秘拼圖，展現了高超的知識水準！" : "拼圖尚未完成，下次再加油！"}</p>
-        <div class="win-score">SCORE: ${finalScore}</div>
-        <div style="font-size:0.9rem; margin-top:-0.5rem; color:var(--text-muted)">
-          ${isWin ? `答題得分: ${this.score} + 時間加成: ${bonus}` : `答題得分: ${this.score}`}
-        </div>
+        <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">解鎖拼圖: ${this.unlockedPieces.length} / 9 片 | 總答題嘗試: ${this.totalAttempts} 次</p>
         <button id="btn-win-exit" class="btn btn-neon-gold">退出並登錄成績</button>
       </div>

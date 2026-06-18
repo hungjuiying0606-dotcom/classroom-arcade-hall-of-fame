@@ -3,7 +3,7 @@
    ========================================== */
 
 const StackGame = {
-  container: null, score: 0, timeLeft: 60, timerInterval: null,
+  container: null, score: 0, timeLeft: 120, timerInterval: null,
   animationId: null, canvas: null, ctx: null,
   blocks: [], currentBlock: null, blockWidth: 0, blockX: 0, blockDir: 1,
   level: 0, correctCount: 0, totalLevels: 0,
@@ -12,7 +12,7 @@ const StackGame = {
 
   init() {
     this.container = document.getElementById('game-body');
-    this.score = 0; this.timeLeft = 60; this.level = 0; this.correctCount = 0; this.totalLevels = 0;
+    this.score = 0; this.timeLeft = 120; this.level = 0; this.correctCount = 0; this.totalLevels = 0;
     this.sessionQuestions = ArcadeState.getRandomQuestions(15);
     this.currentQuestionIndex = 0; this.blocks = []; this.gameOver = false; this.stacking = true;
     document.getElementById('game-stage-title').textContent = "疊疊樂";
@@ -51,7 +51,7 @@ const StackGame = {
     document.getElementById('stack-status').textContent = `❓ ${q.question}`;
     QuestionModal.show(q, 12, (isCorrect) => {
       if (isCorrect) { this.score += 100; this.correctCount++; SoundFX.playSuccess(); }
-      else { this.score = Math.max(0, this.score - 30); SoundFX.playFail(); }
+      else { this.score = Math.max(0, this.score - 20); SoundFX.playFail(); }
       document.getElementById('game-score').textContent = this.score;
       this.stacking = true;
       this.blockWidth = this.level > 0 ? this.blockWidth * 0.9 : this.canvas.width * 0.7;

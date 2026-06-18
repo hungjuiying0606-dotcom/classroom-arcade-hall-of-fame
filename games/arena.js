@@ -129,7 +129,7 @@ const ArenaGame = {
     
     if (this.bossHp <= 0) {
       // Defeated boss!
-      this.score += 500 * this.bossLevel;
+      this.score += 100;
       document.getElementById('game-score').textContent = this.score;
       SoundFX.playWin();
       
@@ -226,7 +226,7 @@ const ArenaGame = {
       // Calculate damage based on Level
       const damage = Math.ceil(20 + Math.random() * 15 + (this.bossLevel * 5));
       this.bossHp = Math.max(0, this.bossHp - damage);
-      this.score += damage * 5;
+      this.score += 100;
       document.getElementById('game-score').textContent = this.score;
       document.getElementById('game-timer').textContent = `進度: ${this.correctCount + this.wrongCount}/20 | 時限: ${this.timeLeft}s`;
       
@@ -253,7 +253,7 @@ const ArenaGame = {
       
       const damage = Math.ceil(15 + Math.random() * 10);
       this.playerHp = Math.max(0, this.playerHp - damage);
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       document.getElementById('game-timer').textContent = `進度: ${this.correctCount + this.wrongCount}/20 | 時限: ${this.timeLeft}s`;
       
@@ -311,14 +311,6 @@ const ArenaGame = {
   endGame(isWin, winReason) {
     this.destroy();
     SoundFX.playWin();
-
-    let finalScore = this.score;
-    let timeBonus = 0;
-    
-    if (isWin) {
-      timeBonus = this.timeLeft * 15;
-      finalScore += timeBonus;
-    }
     
     const totalTries = this.correctCount + this.wrongCount;
     const accuracy = totalTries > 0 ? Math.round((this.correctCount / totalTries) * 100) : 0;
@@ -327,12 +319,9 @@ const ArenaGame = {
       <div class="game-win-overlay">
         <div class="win-title">${isWin ? "🎉 恭喜通關！" : "💀 戰敗結束"}</div>
         <p style="font-size:1.1rem; color:var(--text-main)">${winReason}</p>
-        <div class="win-score">SCORE: ${finalScore}</div>
-        <div style="font-size:0.9rem; margin-top:-0.5rem; color:var(--text-muted)">
-          ${isWin ? `對戰得分: ${this.score} + 時間加成: ${timeBonus} (${this.timeLeft}s x 15)` : `對戰得分: ${this.score}`}
-        </div>
+        <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted); font-size:0.95rem;">
-          挑戰魔王數: Lv.${this.bossLevel} | 答對次數: ${this.correctCount} / 答錯次數: ${this.wrongCount} (精準度: ${accuracy}%)
+           挑戰魔王數: Lv.${this.bossLevel} | 答對次數: ${this.correctCount} / 答錯次數: ${this.wrongCount} (精準度: ${accuracy}%)
         </p>
         <button id="btn-win-exit" class="btn btn-neon-gold" style="padding:0.75rem 2rem;">退出並登錄成績</button>
       </div>

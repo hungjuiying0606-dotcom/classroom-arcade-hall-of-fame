@@ -7,13 +7,13 @@ const SnakeGame = {
   animationId: null, canvas: null, ctx: null,
   snake: [], dir: {x:1,y:0}, nextDir: {x:1,y:0}, food: null,
   gridSize: 20, cols: 0, rows: 0, gameOver: false,
-  currentQuestion: null, correctCount: 0, totalEaten: 0,
+  currentQuestion: null, correctCount: 0, totalEaten: 0, lives: 3,
   sessionQuestions: [], currentQuestionIndex: 0,
   questionPending: false, speed: 150,
 
   init() {
     this.container = document.getElementById('game-body');
-    this.score = 0; this.timeLeft = 90; this.correctCount = 0; this.totalEaten = 0;
+    this.score = 0; this.timeLeft = 90; this.correctCount = 0; this.totalEaten = 0; this.lives = 3;
     this.sessionQuestions = ArcadeState.getRandomQuestions(15);
     this.currentQuestionIndex = 0; this.gameOver = false; this.questionPending = false;
     document.getElementById('game-stage-title').textContent = "知識蛇";
@@ -90,7 +90,7 @@ const SnakeGame = {
 
   startTimers() {
     this.timerInterval = setInterval(() => {
-      this.timeLeft--; document.getElementById('game-timer').textContent = `${this.timeLeft}s`;
+      this.timeLeft--; document.getElementById('game-timer').textContent = `${this.timeLeft}s | ❤️ ${this.lives}`;
       if (this.timeLeft <= 0) this.endGame();
     }, 1000);
   },
@@ -105,8 +105,22 @@ const SnakeGame = {
   update() {
     this.dir = {...this.nextDir};
     const head = {x: this.snake[0].x + this.dir.x, y: this.snake[0].y + this.dir.y};
-    if (head.x < 0 || head.x >= this.cols || head.y < 0 || head.y >= this.rows) { this.endGame(); return; }
-    if (this.snake.some(s => s.x === head.x && s.y === head.y)) { this.endGame(); return; }
+    if (head.x < 0 || head.x >= this.cols || head.y < 0 || head.y >= this.rows) {
+      this.lives--;
+      if (this.lives <= 0) { this.endGame(); return; }
+      this.snake = [{x:Math.floor(this.cols/2),y:Math.floor(this.rows/2)}];
+      this.dir = {x:1,y:0}; this.nextDir = {x:1,y:0};
+      document.getElementById('snake-status').textContent = `💔 撞牆了！剩餘生命: ❤️${this.lives}`;
+      return;
+    }
+    if (this.snake.some(s => s.x === head.x && s.y === head.y)) {
+      this.lives--;
+      if (this.lives <= 0) { this.endGame(); return; }
+      this.snake = [{x:Math.floor(this.cols/2),y:Math.floor(this.rows/2)}];
+      this.dir = {x:1,y:0}; this.nextDir = {x:1,y:0};
+      document.getElementById('snake-status').textContent = `💔 撞到自己了！剩餘生命: ❤️${this.lives}`;
+      return;
+    }
     this.snake.unshift(head);
     if (this.food && head.x === this.food.x && head.y === this.food.y) {
       this.totalEaten++;

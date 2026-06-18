@@ -7,12 +7,12 @@ const PongGame = {
   animationId: null, canvas: null, ctx: null,
   paddle: {x:0,w:120,h:14,y:0}, ball: {x:0,y:0,vx:0,vy:0,r:10},
   bricks: [], cols: 6, rows: 3, gameOver: false,
-  correctCount: 0, totalHits: 0,
+  correctCount: 0, totalHits: 0, lives: 3,
   sessionQuestions: [], currentQuestionIndex: 0,
 
   init() {
     this.container = document.getElementById('game-body');
-    this.score = 0; this.timeLeft = 90; this.correctCount = 0; this.totalHits = 0;
+    this.score = 0; this.timeLeft = 90; this.correctCount = 0; this.totalHits = 0; this.lives = 3;
     this.sessionQuestions = ArcadeState.getRandomQuestions(18);
     this.currentQuestionIndex = 0; this.gameOver = false;
     document.getElementById('game-stage-title').textContent = "彈球王";
@@ -35,7 +35,7 @@ const PongGame = {
   renderStage() {
     this.container.innerHTML = `<div style="width:100%;height:100%;background:#0f111a;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:2px solid var(--neon-blue);">
       <div style="padding:8px 16px;background:rgba(0,127,255,0.1);border-bottom:1px solid rgba(0,127,255,0.3);text-align:center;">
-        <span id="pong-status" style="color:#fff;font-size:0.9rem;font-weight:700;">👆 點擊發球 / 移動滑鼠控制板子</span>
+        <span id="pong-status" style="color:#fff;font-size:0.9rem;font-weight:700;">👆 點擊發球 / 移動滑鼠控制板子 ❤️3</span>
       </div>
       <canvas id="pong-canvas" style="flex:1;width:100%;display:block;touch-action:none;"></canvas>
     </div>`;
@@ -75,7 +75,8 @@ const PongGame = {
 
   startTimers() {
     this.timerInterval = setInterval(() => {
-      this.timeLeft--; document.getElementById('game-timer').textContent = `${this.timeLeft}s`;
+      this.timeLeft--; document.getElementById('game-timer').textContent = `${this.timeLeft}s | ❤️ ${this.lives}`;
+      document.getElementById('pong-status').textContent = `👆 點擊發球 / 移動滑鼠控制板子 ❤️${this.lives}`;
       if (this.timeLeft <= 0) this.endGame();
     }, 1000);
   },
@@ -87,7 +88,12 @@ const PongGame = {
     this.ball.x += this.ball.vx; this.ball.y += this.ball.vy;
     if (this.ball.x - this.ball.r < 0 || this.ball.x + this.ball.r > this.canvas.width) this.ball.vx *= -1;
     if (this.ball.y - this.ball.r < 0) this.ball.vy *= -1;
-    if (this.ball.y + this.ball.r > this.canvas.height) { this.endGame(); return; }
+    if (this.ball.y + this.ball.r > this.canvas.height) {
+      this.lives--;
+      if (this.lives <= 0) { this.endGame(); return; }
+      this.resetBall();
+      return;
+    }
     if (this.ball.vy > 0 && this.ball.y + this.ball.r > this.paddle.y &&
         this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.w) {
       this.ball.vy = -Math.abs(this.ball.vy);

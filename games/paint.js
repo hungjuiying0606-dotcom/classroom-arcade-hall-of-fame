@@ -26,8 +26,10 @@ const PaintGame = {
 
   renderStage() {
     this.container.innerHTML = `<div style="width:100%;height:100%;background:#0f111a;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:2px solid var(--neon-pink);">
-      <div id="paint-grid" style="flex:1;display:grid;gap:8px;padding:20px;grid-template-columns:repeat(${this.cols},1fr);place-items:center;"></div>
-      <div id="paint-question" style="padding:12px;background:rgba(255,0,127,0.1);border-top:1px solid rgba(255,0,127,0.3);text-align:center;color:#fff;font-size:0.9rem;font-weight:700;">點擊格子回答問題！</div>
+      <div id="paint-grid-wrapper" style="flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;">
+        <div id="paint-grid" style="display:grid;gap:4px;padding:8px;grid-template-columns:repeat(${this.cols},1fr);place-items:center;max-width:100%;"></div>
+      </div>
+      <div id="paint-question" style="padding:8px;background:rgba(255,0,127,0.1);border-top:1px solid rgba(255,0,127,0.3);text-align:center;color:#fff;font-size:0.85rem;font-weight:700;">點擊格子回答問題！</div>
     </div>`;
     this.renderGrid();
   },
@@ -41,7 +43,7 @@ const PaintGame = {
         cell.className = 'paint-cell';
         cell.dataset.r = r; cell.dataset.c = c;
         const filled = this.grid[r][c] !== 0;
-        cell.style.cssText = `width:100%;aspect-ratio:1;border-radius:8px;background:${filled ? this.colors[(this.grid[r][c]-1) % this.colors.length] : '#1a1d2e'};border:2px solid ${filled ? 'transparent' : 'rgba(255,255,255,0.1)'};display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:${this.grid[r][c] === 0 ? 'pointer' : 'default'};transition:all 0.3s ease;`;
+        cell.style.cssText = `width:100%;aspect-ratio:1;border-radius:6px;background:${filled ? this.colors[(this.grid[r][c]-1) % this.colors.length] : '#1a1d2e'};border:2px solid ${filled ? 'transparent' : 'rgba(255,255,255,0.1)'};display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:${this.grid[r][c] === 0 ? 'pointer' : 'default'};transition:all 0.3s ease;max-width:80px;max-height:80px;`;
         if (this.grid[r][c] === 0) {
           cell.addEventListener('click', () => { if (!PaintGame.gameOver) PaintGame.askQuestion(parseInt(cell.dataset.r), parseInt(cell.dataset.c)); });
         } else {

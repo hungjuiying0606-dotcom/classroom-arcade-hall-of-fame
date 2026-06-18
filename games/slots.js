@@ -104,21 +104,21 @@ const SlotsGame = {
     document.getElementById('slots-btn').className = 'btn btn-neon-green';
 
     if (allMatch) {
-      this.score += 500;
+      this.score += 100;
       this.correctCount++;
       SoundFX.playWin();
-      document.getElementById('slots-result').textContent = '🎉 JACKPOT! +500 pts!';
+      document.getElementById('slots-result').textContent = '🎉 JACKPOT! +100 pts';
       document.getElementById('slots-result').style.color = '#FFD700';
     } else if (middleMatch) {
-      this.score += 150;
+      this.score += 100;
       this.correctCount++;
       SoundFX.playSuccess();
-      document.getElementById('slots-result').textContent = '✅ Match! +150 pts';
+      document.getElementById('slots-result').textContent = '✅ Match! +100 pts';
       document.getElementById('slots-result').style.color = '#00FF00';
     } else {
-      this.score -= 50;
+      this.score = Math.max(0, this.score - 20);
       SoundFX.playFail();
-      document.getElementById('slots-result').textContent = `❌ Wrong! -50 pts (Answer: ${correctAnswer})`;
+      document.getElementById('slots-result').textContent = `❌ Wrong! -20 pts (Answer: ${correctAnswer})`;
       document.getElementById('slots-result').style.color = '#FF4444';
     }
 

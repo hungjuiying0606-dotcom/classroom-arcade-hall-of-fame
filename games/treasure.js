@@ -177,12 +177,12 @@ const TreasureGame = {
           
           // Trigger cell item
           if (cell.content === 'gold') {
-            this.score += 150;
+            
             document.getElementById('game-score').textContent = this.score;
             SoundFX.playCoin();
             setTimeout(() => alert("💰 發現隱藏寶藏！額外獲得 150 分！"), 300);
           } else if (cell.content === 'trap') {
-            this.score = Math.max(0, this.score - 50);
+            this.score = Math.max(0, this.score - 20);
             document.getElementById('game-score').textContent = this.score;
             SoundFX.playFail();
             setTimeout(() => alert("🕸️ 踩到捕獸夾陷阱！扣除 50 分。"), 300);
@@ -201,7 +201,7 @@ const TreasureGame = {
       } else {
         // Answer wrong
         this.health--;
-        this.score = Math.max(0, this.score - 40);
+        this.score = Math.max(0, this.score - 20);
         document.getElementById('game-score').textContent = this.score;
         this.updateStatsUI();
 
@@ -220,13 +220,8 @@ const TreasureGame = {
   },
 
   async endGame(isWin) {
-    let finalScore = this.score;
-    let bonus = 0;
-    
     if (isWin) {
       SoundFX.playWin();
-      bonus = 400 + this.health * 100; // Heart bonus
-      finalScore += bonus;
     } else {
       SoundFX.playFail();
     }
@@ -235,10 +230,7 @@ const TreasureGame = {
       <div class="game-win-overlay">
         <div class="win-title">${isWin ? "🎁 尋得大寶藏！" : "💀 💀 挑戰結束"}</div>
         <p>${isWin ? "你越過重重迷霧與考驗，成功開啟了終極寶箱！" : "你的生命值已耗盡，迷失在了荒島迷霧中..."}</p>
-        <div class="win-score">SCORE: ${finalScore}</div>
-        <div style="font-size:0.9rem; margin-top:-0.5rem; color:var(--text-muted)">
-          ${isWin ? `探險積分: ${this.score} + 生存加成: ${bonus}` : `探險積分: ${this.score}`}
-        </div>
+        <div class="win-score">SCORE: ${this.score}</div>
         <p style="color:var(--text-muted)">答對題數: ${this.questionsCorrect} 題 / 答題次數: ${this.questionsAnswered} 次</p>
         <button id="btn-win-exit" class="btn btn-neon-green">退出並登錄成績</button>
       </div>

@@ -240,7 +240,7 @@ const MinerGame = {
       }, 500);
     } else {
       SoundFX.playFail();
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
 
       // Dust smoke particles

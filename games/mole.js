@@ -237,7 +237,7 @@ const MoleGame = {
       effect.style.color = "var(--neon-pink)";
       SoundFX.playFail();
       
-      this.score = Math.max(0, this.score - 50);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       
       // Flash incorrect indicator
@@ -256,7 +256,7 @@ const MoleGame = {
       effect.style.color = "var(--neon-gold)";
       SoundFX.playFail();
       
-      this.score = Math.max(0, this.score - 100);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       
       setTimeout(() => {
@@ -269,7 +269,7 @@ const MoleGame = {
       effect.style.color = "var(--neon-pink)";
       SoundFX.playFail();
       
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       
       setTimeout(() => {

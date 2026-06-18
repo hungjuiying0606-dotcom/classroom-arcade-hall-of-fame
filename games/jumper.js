@@ -248,7 +248,7 @@ const JumperGame = {
     // Fall below screen limit -> lose life & respawn on ground
     if (this.player.y > this.canvas.height) {
       this.lives--;
-      this.score = Math.max(0, this.score - 50);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       this.updateStatsUI();
       SoundFX.playFail();
@@ -302,7 +302,7 @@ const JumperGame = {
         // Wrong platform! Breaks apart, player falls
         SoundFX.playFail();
         platform.broken = true;
-        this.score = Math.max(0, this.score - 40);
+        this.score = Math.max(0, this.score - 20);
         document.getElementById('game-score').textContent = this.score;
       }
     }

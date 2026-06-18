@@ -57,7 +57,7 @@ const QuizRaceGame = {
         this.score += 100; this.correctCount++; SoundFX.playSuccess();
       } else {
         this.player.progress = Math.max(0, this.player.progress - 20);
-        this.score = Math.max(0, this.score - 30); SoundFX.playFail();
+        this.score = Math.max(0, this.score - 20); SoundFX.playFail();
       }
       document.getElementById('game-score').textContent = this.score;
       document.getElementById('race-status').textContent = `🏃 ${Math.floor(this.player.progress / this.raceLength * 100)}% 完成`;
@@ -102,8 +102,18 @@ const QuizRaceGame = {
     }
 
     const px = this.player.progress / this.raceLength * (c.width - 80) + 40;
-    ctx.font = "36px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText("🏃", px, this.laneY);
+    const cy = this.laneY;
+    ctx.save();
+    ctx.translate(px, cy);
+    ctx.fillStyle = '#00b894';
+    ctx.beginPath(); ctx.arc(0, -8, 12, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(-10, 4, 20, 22, 5); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(-14, 20, 10, 14, 4); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(4, 20, 10, 14, 4); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(4, -10, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(4, -4, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
 
     ctx.fillStyle = "#00b894";
     ctx.font = "bold 14px Outfit,sans-serif"; ctx.textAlign = "left";

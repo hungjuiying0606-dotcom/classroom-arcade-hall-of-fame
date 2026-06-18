@@ -206,7 +206,7 @@ const LavaGame = {
             this.nextQuestion();
           } else {
             SoundFX.playFail();
-            this.score = Math.max(0, this.score - 40);
+            this.score = Math.max(0, this.score - 20);
             document.getElementById('game-score').textContent = this.score;
             this.selectedPlatform.flash = -1;
             // Player falls back

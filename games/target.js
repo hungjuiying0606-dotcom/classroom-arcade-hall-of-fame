@@ -75,11 +75,11 @@ const TargetGame = {
       if (dx * dx + dy * dy < t.r * t.r) {
         t.alive = false; g.totalShots++;
         if (t.isCorrect) {
-          g.score += 200; g.correctCount++; SoundFX.playSuccess();
+          g.score += 100; g.correctCount++; SoundFX.playSuccess();
           document.getElementById('target-status').textContent = '✅ 正中目標！';
           setTimeout(() => { if (!g.gameOver) g.nextRound(); }, 800);
         } else {
-          g.lives--; g.score = Math.max(0, g.score - 30); SoundFX.playFail();
+          g.lives--; g.score = Math.max(0, g.score - 20); SoundFX.playFail();
           document.getElementById('target-status').textContent = `❌ 錯了！剩餘生命: ${'❤️'.repeat(g.lives)}`;
           if (g.lives <= 0) { g.endGame(); return; }
           setTimeout(() => { if (!g.gameOver) g.nextRound(); }, 800);
@@ -117,11 +117,11 @@ const TargetGame = {
       if (!t.alive) continue;
       const cx = t.x + t.r, cy = t.y + t.r;
       ctx.save(); ctx.translate(cx, cy);
-      ctx.fillStyle = t.isCorrect ? 'rgba(0,184,148,0.15)' : 'rgba(225,112,85,0.15)';
+      ctx.fillStyle = 'rgba(9,132,227,0.15)';
       ctx.beginPath(); ctx.arc(0, 0, t.r + 8, 0, Math.PI * 2); ctx.fill();
       for (let i = 3; i >= 0; i--) {
         const ringR = t.r * (i + 1) / 4;
-        ctx.fillStyle = i % 2 === 0 ? (t.isCorrect ? '#00b894' : '#e17055') : '#fff';
+        ctx.fillStyle = i % 2 === 0 ? '#0984e3' : '#fff';
         ctx.beginPath(); ctx.arc(0, 0, ringR, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1; ctx.stroke();
       }

@@ -94,7 +94,7 @@ const DodgeGame = {
     if (!raw) return;
     this.currentQuestion = ArcadeState.getMultipleChoiceQuestion(raw);
     QuestionModal.show(this.currentQuestion, 12, (isCorrect) => {
-      if (isCorrect) { this.score += 50; this.correctCount++; SoundFX.playSuccess(); }
+      if (isCorrect) { this.score += 100; this.correctCount++; SoundFX.playSuccess(); }
       else { this.score = Math.max(0, this.score - 20); SoundFX.playFail(); }
       document.getElementById('game-score').textContent = this.score;
     });

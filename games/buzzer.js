@@ -105,18 +105,14 @@ const BuzzerGame = {
     this.totalAnswers++;
 
     if (isCorrect) {
-      const elapsed = (Date.now() - this.questionStartTime) / 1000;
-      const speedBonus = Math.max(0, Math.round(100 * (1 - elapsed / 2)));
-      const comboMult = this.combo >= 3 ? 3 : this.combo === 2 ? 2 : this.combo === 1 ? 1.5 : 1;
-      const gained = Math.round((100 + speedBonus) * comboMult);
-      this.score += gained;
+      this.score += 100;
       this.correctCount++;
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
 
       btn.style.background = 'linear-gradient(135deg,#00c853,#69f0ae)';
       btn.style.opacity = '1';
-      btn.innerHTML += ` <span style="margin-left:auto; font-size:0.85rem; background:rgba(0,0,0,0.2); padding:2px 8px; border-radius:6px;">+${gained}pt</span>`;
+      btn.innerHTML += ` <span style="margin-left:auto; font-size:0.85rem; background:rgba(0,0,0,0.2); padding:2px 8px; border-radius:6px;">+100pt</span>`;
       SoundFX.playSuccess();
       document.getElementById('game-score').textContent = this.score;
 
@@ -126,7 +122,7 @@ const BuzzerGame = {
       btn.style.opacity = '1';
       allBtns[this.currentQuestion.answer].style.background = 'linear-gradient(135deg,#00c853,#69f0ae)';
       allBtns[this.currentQuestion.answer].style.opacity = '1';
-      this.score = Math.max(0, this.score - 30);
+      this.score = Math.max(0, this.score - 20);
       this.combo = 0;
       SoundFX.playFail();
       document.getElementById('game-score').textContent = this.score;

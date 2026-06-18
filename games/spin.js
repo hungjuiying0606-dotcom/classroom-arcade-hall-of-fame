@@ -42,6 +42,7 @@ const SpinGame = {
     g.spinning = true; g.spinSpeed = 20 + Math.random() * 30;
     g.totalSpins++;
     document.getElementById('spin-status').textContent = "🌀 旋轉中...";
+    g.spinLoop();
   },
 
   startTimers() {
@@ -73,7 +74,7 @@ const SpinGame = {
     const colors = ['紅', '藍', '綠', '金', '紫', '粉', '青', '橙'];
     document.getElementById('spin-status').textContent = `🎯 停在 ${colors[seg]} 色區域！回答問題！`;
     QuestionModal.show(this.currentQuestion, 15, (isCorrect) => {
-      if (isCorrect) { this.score += 100 + seg * 20; this.correctCount++; SoundFX.playSuccess(); }
+      if (isCorrect) { this.score += 100; this.correctCount++; SoundFX.playSuccess(); }
       else { this.score = Math.max(0, this.score - 20); SoundFX.playFail(); }
       document.getElementById('game-score').textContent = this.score;
       document.getElementById('spin-status').textContent = "👆 點擊轉盤繼續！";

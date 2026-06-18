@@ -231,7 +231,7 @@ const RacerGame = {
       // Wrong!
       SoundFX.playFail();
       this.lives--;
-      this.score = Math.max(0, this.score - 50);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       this.updateStatsUI();
 

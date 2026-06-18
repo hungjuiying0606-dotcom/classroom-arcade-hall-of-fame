@@ -246,7 +246,7 @@ const ArcheryGame = {
     } else {
       // Wrong target hit
       SoundFX.playFail();
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
 
       // Gray smoke particles

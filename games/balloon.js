@@ -164,7 +164,7 @@ const BalloonGame = {
         if (b.isCorrect) {
           // Missed correct balloon! Lose life
           this.lives--;
-          this.score = Math.max(0, this.score - 40);
+          this.score = Math.max(0, this.score - 20);
           document.getElementById('game-score').textContent = this.score;
           this.updateStatsUI();
           SoundFX.playFail();
@@ -222,7 +222,7 @@ const BalloonGame = {
       }, 300);
     } else {
       SoundFX.playFail();
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
     }
   },

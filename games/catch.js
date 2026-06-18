@@ -86,7 +86,7 @@ const CatchGame = {
       if (it.y + it.h >= h - 60 && it.x + it.w > this.basket.x && it.x < this.basket.x + this.basket.w) {
         this.totalAttempts++;
         if (it.isCorrect) { this.score += 100; this.correctCount++; SoundFX.playSuccess(); }
-        else { this.score = Math.max(0, this.score - 30); SoundFX.playFail(); }
+        else { this.score = Math.max(0, this.score - 20); SoundFX.playFail(); }
         document.getElementById('game-score').textContent = this.score;
         this.items.splice(i, 1);
       } else if (it.y > h) {

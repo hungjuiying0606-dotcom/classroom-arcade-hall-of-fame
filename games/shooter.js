@@ -260,7 +260,7 @@ const ShooterGame = {
     } else {
       // Incorrect!
       SoundFX.playFail();
-      this.score = Math.max(0, this.score - 40);
+      this.score = Math.max(0, this.score - 20);
       document.getElementById('game-score').textContent = this.score;
       
       enemy.y = -60; // reset this enemy

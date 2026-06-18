@@ -5,7 +5,7 @@
 const BlockGame = {
   container: null, score: 0, timeLeft: 90, timerInterval: null,
   animationId: null, canvas: null, ctx: null,
-  grid: [], cols: 8, rows: 12, cellSize: 0,
+  grid: [], cols: 8, rows: 12, cellSize: 0, gridOffsetX: 0, gridOffsetY: 0,
   currentPiece: null, gameOver: false,
   correctCount: 0, totalCleared: 0,
   sessionQuestions: [], currentQuestionIndex: 0,
@@ -26,18 +26,32 @@ const BlockGame = {
     this.resize();
     window.addEventListener('resize', this.resize);
     this.canvas.addEventListener('pointerdown', this.onTap);
-    this.cellSize = Math.floor(this.canvas.width / this.cols);
+    this._onKeyDown = (e) => {
+      if (this.gameOver || this.pendingQuestion) return;
+      switch (e.key) { case 'ArrowLeft': this.movePiece(-1, 0); break; case 'ArrowRight': this.movePiece(1, 0); break; case 'ArrowDown': this.movePiece(0, 1); break; case 'ArrowUp': this.rotatePiece(); break; }
+    };
+    window.addEventListener('keydown', this._onKeyDown);
+    document.getElementById('btn-block-left').addEventListener('pointerdown', (e) => { e.preventDefault(); if (!this.gameOver && !this.pendingQuestion) this.movePiece(-1, 0); });
+    document.getElementById('btn-block-rotate').addEventListener('pointerdown', (e) => { e.preventDefault(); if (!this.gameOver && !this.pendingQuestion) this.rotatePiece(); });
+    document.getElementById('btn-block-down').addEventListener('pointerdown', (e) => { e.preventDefault(); if (!this.gameOver && !this.pendingQuestion) this.movePiece(0, 1); });
+    document.getElementById('btn-block-right').addEventListener('pointerdown', (e) => { e.preventDefault(); if (!this.gameOver && !this.pendingQuestion) this.movePiece(1, 0); });
     this.spawnPiece();
     this.startTimers();
     this.loop();
   },
 
-  resize: () => { const g = BlockGame; if (!g.canvas) return; g.canvas.width = g.canvas.clientWidth; g.canvas.height = g.canvas.clientHeight; g.cellSize = Math.floor(g.canvas.width / g.cols); },
+  resize: () => { const g = BlockGame; if (!g.canvas) return; g.canvas.width = g.canvas.clientWidth; g.canvas.height = g.canvas.clientHeight; const aw = g.canvas.width * 0.85, ah = g.canvas.height * 0.85; g.cellSize = Math.floor(Math.min(aw / g.cols, ah / g.rows)); g.gridOffsetX = Math.floor((g.canvas.width - g.cellSize * g.cols) / 2); g.gridOffsetY = Math.floor((g.canvas.height - g.cellSize * g.rows) / 2); },
 
   renderStage() {
     this.container.innerHTML = `<div style="width:100%;height:100%;background:#0f111a;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:2px solid var(--neon-purple);">
-      <div id="block-status" style="padding:8px 16px;background:rgba(200,0,255,0.1);border-bottom:1px solid rgba(200,0,255,0.3);text-align:center;color:#fff;font-size:0.9rem;font-weight:700;">🟦 點擊左/右移動，點下方旋轉，消除滿列得分！</div>
+      <div id="block-status" style="padding:8px 16px;background:rgba(200,0,255,0.1);border-bottom:1px solid rgba(200,0,255,0.3);text-align:center;color:#fff;font-size:0.9rem;font-weight:700;">🟦 用下方按鈕或鍵盤方向鍵操控方塊，消除滿列得分！</div>
       <canvas id="block-canvas" style="flex:1;width:100%;display:block;touch-action:none;"></canvas>
+      <div id="block-buttons" style="display:flex;justify-content:center;gap:12px;padding:10px 16px;background:rgba(200,0,255,0.08);border-top:1px solid rgba(200,0,255,0.2);">
+        <button id="btn-block-left" style="width:56px;height:56px;border-radius:12px;border:2px solid rgba(200,0,255,0.4);background:rgba(200,0,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:center;">◀</button>
+        <button id="btn-block-rotate" style="width:56px;height:56px;border-radius:12px;border:2px solid rgba(200,0,255,0.4);background:rgba(200,0,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:center;">🔄</button>
+        <button id="btn-block-down" style="width:56px;height:56px;border-radius:12px;border:2px solid rgba(200,0,255,0.4);background:rgba(200,0,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:center;">▼</button>
+        <button id="btn-block-right" style="width:56px;height:56px;border-radius:12px;border:2px solid rgba(200,0,255,0.4);background:rgba(200,0,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:center;">▶</button>
+      </div>
     </div>`;
   },
 
@@ -45,8 +59,10 @@ const BlockGame = {
     const g = BlockGame; if (g.gameOver || g.pendingQuestion || !g.currentPiece) return;
     const r = g.canvas.getBoundingClientRect();
     const x = e.clientX - r.left;
-    if (x < g.canvas.width / 3) g.movePiece(-1, 0);
-    else if (x > g.canvas.width * 2 / 3) g.movePiece(1, 0);
+    const relX = x - g.gridOffsetX;
+    if (relX < 0 || relX > g.cellSize * g.cols) return;
+    if (relX < g.cellSize * g.cols / 3) g.movePiece(-1, 0);
+    else if (relX > g.cellSize * g.cols * 2 / 3) g.movePiece(1, 0);
     else g.rotatePiece();
   },
 
@@ -156,16 +172,18 @@ const BlockGame = {
   loop() { this.draw(); this.animationId = requestAnimationFrame(() => this.loop()); },
 
   draw() {
-    const c = this.canvas, ctx = this.ctx, cs = this.cellSize;
+    const c = this.canvas, ctx = this.ctx, cs = this.cellSize, ox = this.gridOffsetX, oy = this.gridOffsetY;
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.fillStyle = "#0f111a"; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(ox, oy, cs * this.cols, cs * this.rows); ctx.clip();
     for (let r = 0; r < this.rows; r++) for (let col = 0; col < this.cols; col++) {
       if (this.grid[r][col] !== 0) {
         ctx.fillStyle = this.grid[r][col]; ctx.beginPath();
-        ctx.roundRect(col * cs + 1, r * cs + 1, cs - 2, cs - 2, 3); ctx.fill();
+        ctx.roundRect(ox + col * cs + 1, oy + r * cs + 1, cs - 2, cs - 2, 3); ctx.fill();
       } else {
         ctx.fillStyle = (r + col) % 2 === 0 ? "#131626" : "#0f111a";
-        ctx.fillRect(col * cs, r * cs, cs, cs);
+        ctx.fillRect(ox + col * cs, oy + r * cs, cs, cs);
       }
     }
     if (this.currentPiece && !this.pendingQuestion) {
@@ -173,13 +191,14 @@ const BlockGame = {
       for (let r = 0; r < p.shape.length; r++) for (let col = 0; col < p.shape[r].length; col++) {
         if (p.shape[r][col]) {
           ctx.fillStyle = p.color; ctx.globalAlpha = 0.8;
-          ctx.beginPath(); ctx.roundRect((p.x + col) * cs + 1, (p.y + r) * cs + 1, cs - 2, cs - 2, 3); ctx.fill();
+          ctx.beginPath(); ctx.roundRect(ox + (p.x + col) * cs + 1, oy + (p.y + r) * cs + 1, cs - 2, cs - 2, 3); ctx.fill();
           ctx.globalAlpha = 1;
         }
       }
     }
-    ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
-    for (let i = 1; i < this.cols; i++) { ctx.beginPath(); ctx.moveTo(i * cs, 0); ctx.lineTo(i * cs, c.height); ctx.stroke(); }
+    ctx.restore();
+    ctx.strokeStyle = "rgba(200,0,255,0.15)"; ctx.lineWidth = 2;
+    ctx.strokeRect(ox, oy, cs * this.cols, cs * this.rows);
   },
 
   endGame() {
@@ -197,6 +216,7 @@ const BlockGame = {
     cancelAnimationFrame(this.animationId);
     if (this.canvas) { this.canvas.removeEventListener('pointerdown', this.onTap); }
     window.removeEventListener('resize', this.resize);
+    window.removeEventListener('keydown', this._onKeyDown);
   }
 };
 window.BlockGame = BlockGame;

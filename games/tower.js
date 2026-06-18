@@ -57,13 +57,13 @@ const TowerGame = {
       if (!this.gameOver) {
         this.totalFloors++;
         if (isCorrect) {
-          this.score += 100 + this.floor * 10; this.correctCount++; SoundFX.playSuccess();
+          this.score += 100; this.correctCount++; SoundFX.playSuccess();
           this.floor++;
           this.renderTower();
           document.getElementById('tower-status').textContent = `⬆️ 爬到第 ${this.floor} 層！`;
           this.nextFloor();
         } else {
-          this.score = Math.max(0, this.score - 30);
+          this.score = Math.max(0, this.score - 20);
           if (this.floor > 1) this.floor--;
           SoundFX.playFail();
           this.renderTower();
