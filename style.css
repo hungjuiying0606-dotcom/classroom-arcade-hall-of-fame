@@ -175,6 +175,11 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.75rem;
 }
 
+.hub-return-btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 /* 6. Buttons System */
 .btn {
   display: inline-flex;
